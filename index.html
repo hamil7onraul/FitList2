@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitList — Encontra o teu Treinador em Angola</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #080808; --white: #F7F4EF; --orange: #E8500A;
+  --orange-light: #FF6B2B; --sand: #C9B99A; --dark: #111010;
+  --mid: #1A1818; --mid2: #222020; --muted: #6B6560;
+  --border: rgba(255,255,255,0.07); --green: #1a8a5a;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--black); color:var(--white); font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:var(--black); }
+::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem 3rem;
+  background:rgba(8,8,8,0.92); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.5rem; letter-spacing:-0.04em; color:var(--white); cursor:pointer; }
+.logo span { color:var(--orange); }
+.nav-right { display:flex; align-items:center; gap:1.5rem; }
+.nav-link { color:var(--muted); font-size:0.85rem; cursor:pointer; background:none; border:none; font-family:'DM Sans',sans-serif; transition:color 0.2s; }
+.nav-link:hover { color:var(--white); }
+.btn-orange { background:var(--orange); color:var(--white); border:none; padding:0.55rem 1.3rem; border-radius:100px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; cursor:pointer; transition:all 0.2s; }
+.btn-orange:hover { background:var(--orange-light); transform:translateY(-1px); }
+
+/* PAGES */
+.page { display:none; }
+.page.active { display:block; animation:pageIn 0.3s ease; }
+@keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* HERO */
+.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:9rem 3rem 5rem; position:relative; overflow:hidden; }
+.hero-glow { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 70% 60% at 75% 25%, rgba(232,80,10,0.16) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 15% 85%, rgba(201,185,154,0.07) 0%, transparent 50%); }
+.hero-eyebrow { display:inline-flex; align-items:center; gap:0.6rem; background:rgba(232,80,10,0.1); border:1px solid rgba(232,80,10,0.25); border-radius:100px; padding:0.4rem 1rem; width:fit-content; font-size:0.7rem; letter-spacing:0.15em; color:var(--orange); text-transform:uppercase; margin-bottom:2rem; animation:fadeUp 0.5s ease both; }
+.hero-eyebrow::before { content:'●'; font-size:0.45rem; }
+.hero h1 { font-family:'Syne',sans-serif; font-size:clamp(3rem,6.5vw,5.5rem); font-weight:800; line-height:1.0; letter-spacing:-0.04em; max-width:820px; animation:fadeUp 0.5s 0.08s ease both; }
+.hero h1 em { font-style:italic; font-weight:400; color:var(--orange); }
+.hero-sub { font-size:1.05rem; color:var(--muted); max-width:460px; line-height:1.75; margin-top:1.5rem; font-weight:300; animation:fadeUp 0.5s 0.16s ease both; }
+.search-bar { display:flex; margin-top:2.5rem; max-width:540px; background:var(--mid); border:1px solid rgba(255,255,255,0.1); border-radius:14px; overflow:hidden; animation:fadeUp 0.5s 0.24s ease both; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+.search-bar select, .search-bar input { background:transparent; border:none; outline:none; color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.9rem; padding:1.1rem 1.25rem; flex:1; min-width:0; }
+.search-bar select { border-right:1px solid var(--border); max-width:190px; }
+.search-bar select option { background:var(--dark); }
+.search-bar input::placeholder { color:var(--muted); }
+.search-bar button { background:var(--orange); border:none; cursor:pointer; padding:0 1.75rem; color:white; font-family:'Syne',sans-serif; font-weight:700; font-size:0.82rem; letter-spacing:0.06em; transition:background 0.2s; white-space:nowrap; flex-shrink:0; }
+.search-bar button:hover { background:var(--orange-light); }
+.cat-row { display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:2.5rem; animation:fadeUp 0.5s 0.32s ease both; }
+.cat-pill { background:var(--mid); border:1px solid var(--border); border-radius:100px; padding:0.5rem 1.1rem; font-size:0.8rem; color:var(--muted); cursor:pointer; transition:all 0.2s; user-select:none; }
+.cat-pill:hover, .cat-pill.active { background:rgba(232,80,10,0.12); border-color:rgba(232,80,10,0.35); color:var(--orange); }
+.hero-stats { display:flex; gap:3rem; margin-top:4rem; animation:fadeUp 0.5s 0.4s ease both; padding-top:3rem; border-top:1px solid var(--border); max-width:560px; }
+.stat { display:flex; flex-direction:column; gap:0.25rem; }
+.stat-n { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; letter-spacing:-0.04em; }
+.stat-n span { color:var(--orange); }
+.stat-l { font-size:0.72rem; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
+
+/* HOW IT WORKS */
+.how-section { padding:6rem 3rem; background:var(--dark); border-top:1px solid var(--border); }
+.section-label { font-size:0.65rem; letter-spacing:0.3em; color:var(--orange); text-transform:uppercase; font-family:monospace; margin-bottom:0.75rem; }
+.section-title { font-family:'Syne',sans-serif; font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; letter-spacing:-0.03em; margin-bottom:3rem; max-width:500px; }
+.steps-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; }
+.step-card { background:var(--mid); border:1px solid var(--border); border-radius:16px; padding:1.75rem; position:relative; overflow:hidden; }
+.step-card::before { content:attr(data-num); position:absolute; top:-0.5rem; right:1rem; font-family:'Syne',sans-serif; font-size:5rem; font-weight:800; color:rgba(255,255,255,0.03); line-height:1; pointer-events:none; }
+.step-icon { font-size:1.8rem; margin-bottom:1rem; }
+.step-title { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; margin-bottom:0.5rem; }
+.step-desc { font-size:0.83rem; color:var(--muted); line-height:1.65; }
+
+/* CTA SECTION */
+.cta-section { padding:6rem 3rem; text-align:center; background:linear-gradient(135deg,#0e0a08,#150e08); border-top:1px solid var(--border); }
+.cta-section h2 { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3.2rem); font-weight:800; letter-spacing:-0.03em; margin-bottom:1rem; }
+.cta-section h2 span { color:var(--orange); }
+.cta-section p { color:var(--muted); max-width:440px; margin:0 auto 2.5rem; line-height:1.7; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--muted); padding:0.75rem 1.75rem; border-radius:100px; font-family:'Syne',sans-serif; font-weight:600; font-size:0.82rem; cursor:pointer; transition:all 0.2s; margin-left:0.75rem; }
+.btn-outline:hover { border-color:var(--white); color:var(--white); }
+
+/* LISTINGS */
+#listings-page { padding:7rem 3rem 4rem; min-height:100vh; }
+.page-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:1.75rem; flex-wrap:wrap; gap:1rem; }
+.page-header h2 { font-family:'Syne',sans-serif; font-size:2rem; font-weight:700; letter-spacing:-0.03em; }
+.page-header h2 span { color:var(--orange); }
+.result-count { font-size:0.8rem; color:var(--muted); }
+.filter-row { display:flex; gap:0.5rem; margin-bottom:2rem; flex-wrap:wrap; }
+.filter-btn { background:var(--mid); border:1px solid var(--border); border-radius:8px; padding:0.5rem 1.1rem; color:var(--muted); font-size:0.78rem; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+.filter-btn:hover, .filter-btn.active { background:rgba(232,80,10,0.1); border-color:rgba(232,80,10,0.4); color:var(--orange); }
+.trainers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:1.25rem; }
+
+/* CARD */
+.t-card { background:var(--mid); border:1px solid var(--border); border-radius:18px; overflow:hidden; cursor:pointer; transition:transform 0.25s, border-color 0.25s, box-shadow 0.25s; }
+.t-card:hover { transform:translateY(-5px); border-color:rgba(232,80,10,0.3); box-shadow:0 24px 48px rgba(0,0,0,0.45); }
+.t-card-img { height:190px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:4.5rem; }
+.t-card-img.pt { background:linear-gradient(135deg,#1a1410,#2a1e10); }
+.t-card-img.am { background:linear-gradient(135deg,#10141a,#10182a); }
+.t-card-img.crossfit { background:linear-gradient(135deg,#1a1410,#2a1e10); }
+.t-card-img.yoga { background:linear-gradient(135deg,#101a15,#18281e); }
+.card-badge { position:absolute; top:0.75rem; left:0.75rem; font-size:0.62rem; font-weight:700; letter-spacing:0.1em; padding:0.28rem 0.65rem; border-radius:100px; text-transform:uppercase; }
+.badge-verified { background:var(--green); color:#fff; }
+.badge-featured { background:var(--orange); color:#fff; }
+.t-card-body { padding:1.2rem; }
+.t-card-name { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:0.2rem; display:flex; align-items:center; gap:0.4rem; }
+.verified-icon { color:var(--orange); font-size:0.75rem; }
+.t-card-spec { font-size:0.78rem; color:var(--muted); margin-bottom:0.8rem; }
+.t-card-tags { display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:1rem; }
+.tag { background:rgba(255,255,255,0.05); border-radius:4px; padding:0.18rem 0.55rem; font-size:0.67rem; color:var(--sand); }
+.t-card-footer { display:flex; justify-content:space-between; align-items:center; padding-top:0.9rem; border-top:1px solid var(--border); }
+.t-price { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; }
+.t-price small { font-size:0.63rem; color:var(--muted); font-family:'DM Sans'; font-weight:300; }
+.t-stars { color:#FFB800; font-size:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+.t-stars span { color:var(--muted); font-size:0.68rem; }
+
+/* PROFILE */
+#profile-page { padding:7rem 3rem 6rem; min-height:100vh; }
+.profile-inner { max-width:860px; }
+.back-btn { display:inline-flex; align-items:center; gap:0.5rem; color:var(--muted); font-size:0.82rem; cursor:pointer; margin-bottom:2.5rem; transition:color 0.2s; background:none; border:none; font-family:'DM Sans',sans-serif; }
+.back-btn:hover { color:var(--white); }
+.profile-top { display:grid; grid-template-columns:130px 1fr; gap:2rem; align-items:start; margin-bottom:2rem; }
+.p-avatar { width:130px; height:130px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:4rem; border:2px solid rgba(232,80,10,0.25); flex-shrink:0; overflow:hidden; }
+.p-avatar.pt { background:linear-gradient(135deg,#1a1410,#2a1e10); }
+.p-avatar.am { background:linear-gradient(135deg,#10141a,#10182a); }
+.p-avatar.crossfit { background:linear-gradient(135deg,#1a1410,#2a1e10); }
+.p-avatar.yoga { background:linear-gradient(135deg,#101a15,#18281e); }
+.p-name { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.3rem; line-height:1.1; }
+.p-spec { font-size:0.9rem; color:var(--muted); margin-bottom:0.9rem; }
+.p-meta { display:flex; gap:0.6rem; flex-wrap:wrap; }
+.meta-tag { background:var(--mid2); border:1px solid var(--border); border-radius:6px; padding:0.3rem 0.75rem; font-size:0.73rem; color:var(--sand); display:flex; align-items:center; gap:0.35rem; }
+.meta-tag.verified-tag { color:var(--green); border-color:rgba(26,138,90,0.3); }
+.p-bio { font-size:0.9rem; color:var(--muted); line-height:1.75; max-width:640px; margin:1.75rem 0; padding:1.5rem; background:var(--mid); border:1px solid var(--border); border-radius:12px; }
+.p-section-title { font-family:'Syne',sans-serif; font-size:0.75rem; font-weight:700; letter-spacing:0.12em; color:var(--sand); text-transform:uppercase; margin:2rem 0 1rem; }
+.services-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(195px,1fr)); gap:0.75rem; }
+.svc-card { background:var(--mid); border:1px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.2s; }
+.svc-card:hover { border-color:rgba(232,80,10,0.3); }
+.svc-name { font-weight:500; font-size:0.9rem; margin-bottom:0.25rem; }
+.svc-desc { font-size:0.73rem; color:var(--muted); margin-bottom:0.8rem; line-height:1.5; }
+.svc-price { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; color:var(--orange); }
+.wa-cta { position:sticky; bottom:1.5rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:1.1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; margin-top:3rem; gap:1rem; flex-wrap:wrap; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+.wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; }
+.wa-cta-left .price-sub { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
+.wa-btn { display:inline-flex; align-items:center; gap:0.6rem; background:#25D366; color:#000; border:none; padding:0.9rem 1.75rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.88rem; cursor:pointer; transition:all 0.2s; text-decoration:none; }
+.wa-btn:hover { background:#20c05c; transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,211,102,0.25); }
+.wa-btn svg { width:18px; height:18px; }
+
+/* REGISTER - Airtable Form Embed */
+#register-page { padding:7rem 3rem 5rem; min-height:100vh; }
+.register-inner { max-width:700px; }
+.register-inner h2 { font-family:'Syne',sans-serif; font-size:2.4rem; font-weight:800; letter-spacing:-0.03em; margin-bottom:0.6rem; line-height:1.1; }
+.register-inner h2 span { color:var(--orange); }
+.register-inner .sub { color:var(--muted); font-size:0.9rem; margin-bottom:2rem; line-height:1.7; }
+.form-embed { border-radius:16px; overflow:hidden; border:1px solid var(--border); background:white; }
+.form-embed iframe { width:100%; border:none; display:block; min-height:700px; }
+
+/* ABOUT */
+#about-page { padding:7rem 3rem 5rem; min-height:100vh; }
+.about-inner { max-width:720px; }
+.about-inner h2 { font-family:'Syne',sans-serif; font-size:clamp(2rem,4vw,3rem); font-weight:800; letter-spacing:-0.03em; margin-bottom:1.5rem; line-height:1.1; }
+.about-inner h2 span { color:var(--orange); }
+.about-body { font-size:0.92rem; color:var(--muted); line-height:1.85; max-width:600px; }
+.about-body p { margin-bottom:1.25rem; }
+.about-body strong { color:var(--white); font-weight:500; }
+.about-values { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin:2.5rem 0; }
+.value-card { background:var(--mid); border:1px solid var(--border); border-radius:12px; padding:1.25rem; }
+.value-icon { font-size:1.5rem; margin-bottom:0.6rem; }
+.value-title { font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; margin-bottom:0.35rem; }
+.value-desc { font-size:0.77rem; color:var(--muted); line-height:1.6; }
+.team-note { background:rgba(232,80,10,0.07); border:1px solid rgba(232,80,10,0.2); border-radius:12px; padding:1.5rem; margin-top:2rem; }
+.team-note p { font-size:0.88rem; color:var(--sand); line-height:1.7; margin:0; }
+.team-note strong { color:var(--orange); }
+
+/* LOADING */
+.loading { grid-column:1/-1; text-align:center; padding:4rem; color:var(--muted); }
+.loading-spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--orange); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* FOOTER */
+footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; background:var(--dark); }
+.footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
+.footer-logo span { color:var(--orange); }
+.footer-links { display:flex; gap:1.5rem; }
+.footer-links a { font-size:0.78rem; color:var(--muted); text-decoration:none; cursor:pointer; transition:color 0.2s; }
+.footer-links a:hover { color:var(--white); }
+footer p { font-size:0.72rem; color:var(--muted); }
+
+/* TOAST */
+.toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:0.9rem 2rem; border-radius:100px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; z-index:999; animation:toastIn 0.4s ease, toastOut 0.4s 2.5s ease forwards; white-space:nowrap; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
+@keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateX(-50%) translateY(20px)} }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-width:768px){
+  nav { padding:1rem 1.25rem; }
+  .nav-link:not(.btn-orange){ display:none; }
+  .hero,#listings-page,#profile-page,#register-page,#about-page { padding-left:1.25rem; padding-right:1.25rem; }
+  .hero h1 { font-size:2.8rem; }
+  .profile-top { grid-template-columns:1fr; }
+  .hero-stats { gap:1.75rem; }
+  .search-bar { flex-direction:column; border-radius:12px; }
+  .search-bar select { border-right:none; border-bottom:1px solid var(--border); max-width:100%; }
+  .search-bar button { padding:1rem; width:100%; }
+  footer { padding:1.5rem 1.25rem; }
+  .footer-links { display:none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">Fit<span>List</span></div>
+  <div class="nav-right">
+    <button class="nav-link" onclick="showPage('listings')">Explorar</button>
+    <button class="nav-link" onclick="showPage('about')">Sobre</button>
+    <button class="btn-orange" onclick="showPage('register')">Sou Treinador</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="home-page" class="page active">
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-eyebrow">Angola · Portugal · África</div>
+    <h1>Encontra o teu<br><em>treinador perfeito</em><br>em Angola</h1>
+    <p class="hero-sub">Os melhores Personal Trainers e instrutores de Artes Marciais de Luanda — num só lugar. Contacto directo via WhatsApp.</p>
+    <div class="search-bar">
+      <select><option>Todas categorias</option><option>Personal Trainer</option><option>Boxe</option><option>Judo</option><option>Muay Thai</option><option>MMA</option><option>Crossfit</option><option>Yoga</option></select>
+      <input type="text" placeholder="Zona (ex: Talatona, Miramar…)">
+      <button onclick="showPage('listings')">Pesquisar →</button>
+    </div>
+    <div class="cat-row">
+      <div class="cat-pill active" onclick="goFilter('all')">🏋️ Todos</div>
+      <div class="cat-pill" onclick="goFilter('pt')">💪 Personal Trainer</div>
+      <div class="cat-pill" onclick="goFilter('am')">🥊 Artes Marciais</div>
+      <div class="cat-pill" onclick="goFilter('crossfit')">🤸 Crossfit</div>
+      <div class="cat-pill" onclick="goFilter('yoga')">🧘 Yoga</div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n" id="stat-trainers">—</div><div class="stat-l">Treinadores</div></div>
+      <div class="stat"><div class="stat-n">48<span>+</span></div><div class="stat-l">Academias</div></div>
+      <div class="stat"><div class="stat-n">4.9<span>★</span></div><div class="stat-l">Avaliação média</div></div>
+    </div>
+  </section>
+
+  <section class="how-section">
+    <div class="section-label">Como funciona</div>
+    <h2 class="section-title">Simples, rápido<br>e directo</h2>
+    <div class="steps-grid">
+      <div class="step-card" data-num="1"><div class="step-icon">🔍</div><div class="step-title">Pesquisa</div><div class="step-desc">Filtra por categoria e zona em Luanda. Encontra o treinador ideal em segundos.</div></div>
+      <div class="step-card" data-num="2"><div class="step-icon">👤</div><div class="step-title">Explora o Perfil</div><div class="step-desc">Vê experiência, especialidades, preços e avaliações reais de outros clientes.</div></div>
+      <div class="step-card" data-num="3"><div class="step-icon">💬</div><div class="step-title">Contacta via WhatsApp</div><div class="step-desc">Clica no botão verde e fala directamente com o treinador. Sem intermediários.</div></div>
+      <div class="step-card" data-num="4"><div class="step-icon">🔥</div><div class="step-title">Começa a Treinar</div><div class="step-desc">Combina tudo com o treinador e começa a transformação. É assim tão simples.</div></div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="section-label">Para profissionais</div>
+    <h2>És treinador?<br>Junta-te ao <span>FitList</span></h2>
+    <p>Coloca o teu perfil em frente de centenas de clientes em Luanda. Grátis nos primeiros 3 meses.</p>
+    <button class="btn-orange" onclick="showPage('register')">Criar Perfil Gratuito</button>
+    <button class="btn-outline" onclick="showPage('about')">Saber mais</button>
+  </section>
+</div>
+
+<!-- LISTINGS -->
+<div id="listings-page" class="page">
+  <div class="page-header">
+    <div>
+      <h2>Treinadores em <span>Luanda</span></h2>
+      <div class="result-count" id="result-count">A carregar...</div>
+    </div>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter(this,'all')">Todos</button>
+    <button class="filter-btn" onclick="setFilter(this,'pt')">💪 Personal Trainer</button>
+    <button class="filter-btn" onclick="setFilter(this,'am')">🥊 Artes Marciais</button>
+    <button class="filter-btn" onclick="setFilter(this,'crossfit')">🤸 Crossfit</button>
+    <button class="filter-btn" onclick="setFilter(this,'yoga')">🧘 Yoga</button>
+  </div>
+  <div class="trainers-grid" id="trainers-grid">
+    <div class="loading"><div class="loading-spinner"></div>A carregar treinadores...</div>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile-page" class="page">
+  <div class="profile-inner">
+    <button class="back-btn" onclick="showPage('listings')">← Voltar aos resultados</button>
+    <div class="profile-top" id="profile-top"></div>
+    <p class="p-bio" id="profile-bio"></p>
+    <div class="p-section-title">Serviços & Preços</div>
+    <div class="services-grid" id="profile-services"></div>
+    <div class="wa-cta" id="profile-cta"></div>
+  </div>
+</div>
+
+<!-- REGISTER — Airtable Form incorporado -->
+<div id="register-page" class="page">
+  <div class="register-inner">
+    <button class="back-btn" onclick="showPage('home')">← Voltar</button>
+    <h2>Junta-te ao<br><span>FitList</span></h2>
+    <p class="sub">Preenche o formulário abaixo. Os primeiros 3 meses são completamente grátis. Entramos em contacto via WhatsApp em 24h.</p>
+    <div class="form-embed">
+      <iframe src="https://airtable.com/embed/appCBkBHDMOqS3rbE/shrsmgP5JpPV2nyXy" frameborder="0" onmousewheel="" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about-page" class="page">
+  <div class="about-inner">
+    <button class="back-btn" onclick="showPage('home')">← Voltar</button>
+    <div class="section-label">A nossa missão</div>
+    <h2>Organizar o talento<br><span>fitness de Angola</span></h2>
+    <div class="about-body">
+      <p>Angola tem <strong>dezenas de treinadores excepcionais</strong> — Personal Trainers, mestres de artes marciais, instrutores de crossfit e yoga. Mas a maioria trabalha de forma informal, apenas pelo WhatsApp e boca-a-boca. Os clientes não os encontram.</p>
+      <p>O <strong>FitList</strong> nasceu para resolver isto. Uma plataforma simples que conecta os melhores profissionais do fitness com as pessoas que precisam deles — em Luanda, em Angola, e amanhã em toda a África.</p>
+      <p>O cliente encontra o treinador, vê o perfil, as avaliações e o preço — e contacta directamente pelo WhatsApp. <strong>Simples como deve ser.</strong></p>
+    </div>
+    <div class="about-values">
+      <div class="value-card"><div class="value-icon">🌍</div><div class="value-title">Feito para África</div><div class="value-desc">WhatsApp primeiro. Kwanzas. Zonas de Luanda. Cultura local.</div></div>
+      <div class="value-card"><div class="value-icon">💬</div><div class="value-title">Directo ao Assunto</div><div class="value-desc">Sem intermediários. O cliente fala directamente com o treinador.</div></div>
+      <div class="value-card"><div class="value-icon">⭐</div><div class="value-title">Confiança Real</div><div class="value-desc">Avaliações verificadas. Perfis reais. Profissionais confirmados.</div></div>
+      <div class="value-card"><div class="value-icon">🚀</div><div class="value-title">Crescer Juntos</div><div class="value-desc">Quando os treinadores crescem, o FitList cresce.</div></div>
+    </div>
+    <div class="team-note"><p>O FitList foi criado em Luanda com a visão de se tornar a maior plataforma de fitness de África.<br><br><strong>Angola primeiro. África a seguir.</strong></p></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Fit<span>List</span></div>
+  <div class="footer-links">
+    <a onclick="showPage('listings')">Explorar</a>
+    <a onclick="showPage('register')">Sou Treinador</a>
+    <a onclick="showPage('about')">Sobre</a>
+  </div>
+  <p>© 2025 FitList · Angola · Portugal · África</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+// O QUE ESTE CÓDIGO FAZ (para aprendizagem):
+//
+// 1. AIRTABLE SHARED VIEW — em vez de usar um token
+//    secreto, usamos um link público de "apenas leitura"
+//    que o Airtable gera. É como uma janela para ver
+//    os dados sem conseguir alterá-los.
+//
+// 2. FETCH API — é a forma de o browser ir buscar dados
+//    a outro servidor. Como um mensageiro que vai buscar
+//    informação e traz de volta.
+//
+// 3. JSON — formato de dados que a internet usa para
+//    trocar informação. É como uma lista organizada.
+//
+// 4. DOM MANIPULATION — alterar o que aparece no ecrã
+//    com JavaScript. getElementById encontra um elemento
+//    HTML pelo seu id, innerHTML muda o conteúdo.
+// ═══════════════════════════════════════════════════
+
+// ── CONFIG ──
+// O ID da tua base e tabela no Airtable (não é segredo, é público)
+const BASE_ID  = 'appCBkBHDMOqS3rbE';
+const TABLE_ID = 'tblmVytcK7577DUMU';
+
+// URL pública do Airtable — só leitura, sem token necessário
+// Filtramos apenas treinadores com Estado = "Aprovado"
+const PUBLIC_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
+
+// ── MAPAS DE EMOJI E CATEGORIA ──
+// Dicionários: associam o nome da especialidade ao emoji e categoria
+const EMOJI = { 'Personal Trainer':'💪','Boxe':'🥊','Judo':'🥋','MMA':'🥷','Muay Thai':'🥊','Crossfit':'🤸','Yoga / Pilates':'🧘','Karaté':'🥋','Capoeira':'🤼' };
+const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am' };
+
+// ── ESTADO DA APP ──
+// Variáveis globais que guardam os dados durante a sessão
+let allTrainers   = [];   // todos os treinadores carregados
+let activeFilter  = 'all'; // filtro activo actualmente
+
+// ── FUNÇÕES UTILITÁRIAS ──
+// Converte número de avaliação (ex: 4.5) em estrelas (ex: ★★★★☆)
+function toStars(r) {
+  const n = Math.round(r || 0);
+  return '★'.repeat(n) + '☆'.repeat(5-n);
+}
+// Formata preço com separador de milhares (ex: 15000 → 15.000 Kz)
+function toPrice(p) {
+  return p ? Number(p).toLocaleString('pt-PT') + ' Kz' : 'Consultar';
+}
+
+// ── NAVEGAÇÃO ──
+// Esconde todas as páginas e mostra apenas a pedida
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(page+'-page').classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
+  // Quando vai para listings, carrega os treinadores
+  if (page === 'listings') loadTrainers();
+}
+
+function goFilter(cat) {
+  activeFilter = cat;
+  showPage('listings');
+}
+
+// ── CARREGAR TREINADORES DO AIRTABLE ──
+// Esta função vai buscar os dados ao Airtable via fetch (HTTP GET)
+// Usa a Shared View pública — sem necessidade de token
+async function loadTrainers() {
+  const grid = document.getElementById('trainers-grid');
+  grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>A carregar treinadores...</div>';
+
+  try {
+    // Construir URL com filtro — só treinadores aprovados
+    // encodeURIComponent garante que os caracteres especiais não quebram o URL
+    // Chama a função segura do Netlify — o token fica no servidor
+    const res = await fetch('/.netlify/functions/airtable?action=list');
+
+    // Se a resposta não for OK, lança um erro
+    if (!res.ok) throw new Error(res.status);
+
+    // Converte a resposta de JSON para objecto JavaScript
+    const data = await res.json();
+    allTrainers = data.records || [];
+
+    // Actualiza o contador na página inicial
+    const count = allTrainers.length;
+    const statEl = document.getElementById('stat-trainers');
+    if (statEl) statEl.innerHTML = count + '<span>+</span>';
+
+    renderTrainers(activeFilter);
+
+  } catch(err) {
+    // Se algo correr mal, mostra mensagem de erro
+    grid.innerHTML = '<div class="loading" style="color:#E8500A;">Erro ao carregar. A tentar novamente...</div>';
+    // Tenta novamente com dados de exemplo se a API falhar
+    loadFallbackData();
+  }
+}
+
+// ── DADOS DE EXEMPLO (fallback) ──
+// Se a API falhar, usa estes dados para o site não aparecer vazio
+function loadFallbackData() {
+  allTrainers = [
+    { id:'1', fields:{ Nome:'Carlos Mbemba', Especialidade:'Personal Trainer', Zona:'Talatona', WhatsApp:'+244923000001', 'Preço por Sessão':15000, Bio:'Treinador certificado com 6 anos de experiência em musculação e perda de peso. Já ajudei mais de 200 clientes em Luanda.', 'Anos Experiência':6, Avaliação:4.9, 'Nº Avaliações':34, Verificado:true, Estado:'Aprovado' }},
+    { id:'2', fields:{ Nome:'Ana Lopes', Especialidade:'Boxe', Zona:'Miramar', WhatsApp:'+244923000002', 'Preço por Sessão':12000, Bio:'Campeã nacional de Boxe feminino. Treino todos os níveis, desde iniciantes à competição.', 'Anos Experiência':7, Avaliação:4.4, 'Nº Avaliações':21, Verificado:false, Estado:'Aprovado' }},
+    { id:'3', fields:{ Nome:'Mestre João Teixeira', Especialidade:'Judo', Zona:'Viana', WhatsApp:'+244923000003', 'Preço por Sessão':10000, Bio:'Mais de 20 anos de experiência em Judo e Karaté para crianças e adultos.', 'Anos Experiência':20, Avaliação:5.0, 'Nº Avaliações':58, Verificado:true, Estado:'Aprovado' }},
+    { id:'4', fields:{ Nome:'Filipa Neto', Especialidade:'Crossfit', Zona:'Alvalade', WhatsApp:'+244923000004', 'Preço por Sessão':13500, Bio:'Coach de Crossfit certificada. Treino funcional de alta intensidade e mobilidade.', 'Anos Experiência':4, Avaliação:4.3, 'Nº Avaliações':17, Verificado:false, Estado:'Aprovado' }},
+    { id:'5', fields:{ Nome:'Rita Domingos', Especialidade:'Yoga / Pilates', Zona:'Luanda Sul', WhatsApp:'+244923000005', 'Preço por Sessão':9000, Bio:'Instrutora de Yoga e Pilates com formação em Lisboa e Índia. 8 anos de experiência.', 'Anos Experiência':8, Avaliação:5.0, 'Nº Avaliações':42, Verificado:true, Estado:'Aprovado' }},
+    { id:'6', fields:{ Nome:'Paulo Sebastião', Especialidade:'MMA', Zona:'Benfica', WhatsApp:'+244923000006', 'Preço por Sessão':18000, Bio:'Atleta profissional de MMA. Faixa Roxa em BJJ. Treino atletas e iniciantes.', 'Anos Experiência':9, Avaliação:4.3, 'Nº Avaliações':29, Verificado:false, Estado:'Aprovado' }},
+    { id:'7', fields:{ Nome:'Miguel Santos', Especialidade:'Personal Trainer', Zona:'Miramar', WhatsApp:'+244923000007', 'Preço por Sessão':11000, Bio:'Especialista em corrida e maratonas. Trabalhei com a selecção angolana de atletismo.', 'Anos Experiência':10, Avaliação:5.0, 'Nº Avaliações':23, Verificado:true, Estado:'Aprovado' }},
+    { id:'8', fields:{ Nome:'Esperança Lima', Especialidade:'Capoeira', Zona:'Rangel', WhatsApp:'+244923000008', 'Preço por Sessão':8500, Bio:'Mestra de Capoeira Angola com 15 anos de prática. Aulas para crianças e adultos.', 'Anos Experiência':15, Avaliação:4.3, 'Nº Avaliações':11, Verificado:false, Estado:'Aprovado' }},
+  ];
+  const statEl = document.getElementById('stat-trainers');
+  if (statEl) statEl.innerHTML = allTrainers.length + '<span>+</span>';
+  renderTrainers(activeFilter);
+}
+
+// ── RENDERIZAR CARDS DOS TREINADORES ──
+// Constrói o HTML dos cards a partir dos dados e insere na página
+function renderTrainers(filterCat) {
+  activeFilter = filterCat;
+  const grid = document.getElementById('trainers-grid');
+  const countEl = document.getElementById('result-count');
+
+  // Filtrar por categoria se não for 'all'
+  const list = filterCat === 'all'
+    ? allTrainers
+    : allTrainers.filter(r => CAT[r.fields['Especialidade']] === filterCat);
+
+  if (countEl) countEl.textContent = list.length + ' profissionais disponíveis';
+
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="loading">Nenhum treinador encontrado nesta categoria.</div>';
+    return;
+  }
+
+  // map() transforma cada treinador num bloco de HTML
+  // join('') une todos os blocos numa só string
+  grid.innerHTML = list.map(record => {
+    const f       = record.fields;
+    const emoji   = EMOJI[f['Especialidade']] || '🏋️';
+    const cls     = CAT[f['Especialidade']] || 'pt';
+    const stars   = toStars(f['Avaliação']);
+    const price   = toPrice(f['Preço por Sessão']);
+    const badge   = f['Verificado']
+      ? '<div class="card-badge badge-verified">✓ Verificado</div>'
+      : '';
+    const foto    = f['Foto']?.[0]?.url;
+    const imgHTML = foto
+      ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" alt="${f['Nome']}">`
+      : emoji;
+
+    return `
+      <div class="t-card" onclick="openProfile('${record.id}')">
+        <div class="t-card-img ${cls}">${imgHTML}${badge}</div>
+        <div class="t-card-body">
+          <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
+          <div class="t-card-spec">${f['Especialidade']} · ${f['Zona']}, Luanda</div>
+          <div class="t-card-tags">
+            <span class="tag">${f['Especialidade']}</span>
+            ${f['Anos Experiência'] ? `<span class="tag">${f['Anos Experiência']} anos exp.</span>` : ''}
+          </div>
+          <div class="t-card-footer">
+            <div class="t-price">${price} <small>/ sessão</small></div>
+            <div class="t-stars">${stars} <span>(${f['Nº Avaliações'] || 0})</span></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── ABRIR PERFIL ──
+// Encontra o treinador pelo ID e constrói a página de perfil
+function openProfile(recordId) {
+  // find() procura no array o registo com o id correspondente
+  const record = allTrainers.find(r => r.id === recordId);
+  if (!record) return;
+  const f = record.fields;
+
+  const emoji  = EMOJI[f['Especialidade']] || '🏋️';
+  const cls    = CAT[f['Especialidade']] || 'pt';
+  const stars  = toStars(f['Avaliação']);
+  const price  = toPrice(f['Preço por Sessão']);
+  const foto   = f['Foto']?.[0]?.url;
+  const avatar = foto
+    ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${f['Nome']}">`
+    : emoji;
+
+  document.getElementById('profile-top').innerHTML = `
+    <div class="p-avatar ${cls}">${avatar}</div>
+    <div>
+      <div class="p-name">${f['Nome']}</div>
+      <div class="p-spec">${f['Especialidade']}${f['Anos Experiência'] ? ' · ' + f['Anos Experiência'] + ' anos exp.' : ''}</div>
+      <div class="p-meta">
+        <div class="meta-tag">📍 ${f['Zona']}, Luanda</div>
+        <div class="meta-tag">${stars} (${f['Nº Avaliações'] || 0} avaliações)</div>
+        ${f['Verificado'] ? '<div class="meta-tag verified-tag">✅ Verificado</div>' : ''}
+        <div class="meta-tag">💬 Responde via WhatsApp</div>
+      </div>
+    </div>`;
+
+  document.getElementById('profile-bio').textContent = f['Bio'] || 'Sem descrição disponível.';
+
+  document.getElementById('profile-services').innerHTML = `
+    <div class="svc-card"><div class="svc-name">Sessão Individual</div><div class="svc-desc">1 hora de treino personalizado</div><div class="svc-price">${price}</div></div>
+    <div class="svc-card"><div class="svc-name">Pack Mensal</div><div class="svc-desc">Plano personalizado mensal</div><div class="svc-price">Consultar</div></div>
+    <div class="svc-card"><div class="svc-name">Consulta Online</div><div class="svc-desc">Avaliação e plano de treino</div><div class="svc-price">Consultar</div></div>`;
+
+  // Constrói o link do WhatsApp com mensagem pré-preenchida
+  // replace() remove espaços e o símbolo + do número
+  const waNum = (f['WhatsApp'] || '').replace(/[\s+]/g,'');
+  const waMsg = encodeURIComponent(`Olá ${f['Nome'].split(' ')[0]}! Vi o teu perfil no FitList e gostava de saber mais sobre os teus serviços.`);
+
+  document.getElementById('profile-cta').innerHTML = `
+    <div class="wa-cta-left">
+      <div class="price-big">${price} <span style="font-size:0.7rem;color:var(--muted);font-family:'DM Sans';font-weight:300;">/ sessão</span></div>
+      <div class="price-sub">Contacta directamente via WhatsApp</div>
+    </div>
+    <a class="wa-btn" href="https://wa.me/${waNum}?text=${waMsg}" target="_blank" onclick="fetch('/.netlify/functions/airtable?action=click&id=${record.id}',{method:'PATCH'})">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Contactar via WhatsApp
+    </a>`;
+
+  showPage('profile');
+}
+
+// ── FILTROS ──
+function setFilter(btn, cat) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTrainers(cat);
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+// ── INICIALIZAÇÃO ──
+// Quando a página carrega, pré-carrega os treinadores em background
+// para que quando o utilizador clicar em "Explorar" já esteja pronto
+loadFallbackData(); // carrega dados de exemplo imediatamente
+loadTrainers();     // tenta carregar do Airtable em background
+
+// Cat pills interactivos
+document.querySelectorAll('.cat-pill').forEach(pill => {
+  pill.addEventListener('click', function() {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
