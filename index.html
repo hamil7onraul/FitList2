@@ -556,8 +556,11 @@ function openProfile(index) {
 
   // Constrói o link do WhatsApp com mensagem pré-preenchida
   // replace() remove espaços e o símbolo + do número
-  const waRaw = typeof f['WhatsApp'] === 'object' ? (f['WhatsApp']?.number || '') : (f['WhatsApp'] || '');
-  const waNum = waRaw.replace(/[\s+]/g,'');
+  const waField = f['WhatsApp'];
+  let waNum = '';
+  if (typeof waField === 'string') waNum = waField.replace(/[\s+]/g,'');
+  else if (waField && typeof waField === 'object') waNum = String(waField.number || waField.value || '').replace(/[\s+]/g,'');
+  else waNum = String(waField || '').replace(/[\s+]/g,'');
   const waMsg = encodeURIComponent(`Olá ${f['Nome'].split(' ')[0]}! Vi o teu perfil no FitList e gostava de saber mais sobre os teus serviços.`);
 
   document.getElementById('profile-cta').innerHTML = `
