@@ -482,7 +482,7 @@ function renderTrainers(filterCat) {
 
   // map() transforma cada treinador num bloco de HTML
   // join('') une todos os blocos numa só string
-  grid.innerHTML = list.map(record => {
+  grid.innerHTML = list.map((record, index) => {
     const f       = record.fields;
     const emoji   = EMOJI[f['Especialidade']] || '🏋️';
     const cls     = CAT[f['Especialidade']] || 'pt';
@@ -495,9 +495,11 @@ function renderTrainers(filterCat) {
     const imgHTML = foto
       ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" alt="${f['Nome']}">`
       : emoji;
+    // Guardamos o índice no array allTrainers para abrir o perfil correctamente
+    const globalIndex = allTrainers.indexOf(record);
 
     return `
-      <div class="t-card" onclick="openProfile('${record.id}')">
+      <div class="t-card" onclick="openProfile(${globalIndex})">
         <div class="t-card-img ${cls}">${imgHTML}${badge}</div>
         <div class="t-card-body">
           <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
@@ -517,9 +519,9 @@ function renderTrainers(filterCat) {
 
 // ── ABRIR PERFIL ──
 // Encontra o treinador pelo ID e constrói a página de perfil
-function openProfile(recordId) {
-  // find() procura no array o registo com o id correspondente
-  const record = allTrainers.find(r => r.id === recordId);
+function openProfile(index) {
+  // Acede directamente ao treinador pelo índice no array
+  const record = allTrainers[index];
   if (!record) return;
   const f = record.fields;
 
