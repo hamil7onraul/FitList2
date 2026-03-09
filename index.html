@@ -301,6 +301,19 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <button class="filter-btn" onclick="setFilter(this,'am')">🥊 Artes Marciais</button>
     <button class="filter-btn" onclick="setFilter(this,'crossfit')">🤸 Crossfit</button>
     <button class="filter-btn" onclick="setFilter(this,'yoga')">🧘 Yoga</button>
+    <select id="zona-filter" onchange="setZonaFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
+      <option value="">📍 Todas as zonas</option>
+      <option value="Talatona">Talatona</option>
+      <option value="Miramar">Miramar</option>
+      <option value="Alvalade">Alvalade</option>
+      <option value="Viana">Viana</option>
+      <option value="Benfica">Benfica</option>
+      <option value="Rangel">Rangel</option>
+      <option value="Luanda Sul">Luanda Sul</option>
+      <option value="Cacuaco">Cacuaco</option>
+      <option value="Mutamba">Mutamba</option>
+      <option value="Maianga">Maianga</option>
+    </select>
   </div>
   <div class="trainers-grid" id="trainers-grid">
     <div class="loading"><div class="loading-spinner"></div>A carregar treinadores...</div>
@@ -411,6 +424,7 @@ const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay
 // Variáveis globais que guardam os dados durante a sessão
 let allTrainers   = [];   // todos os treinadores carregados
 let activeFilter  = 'all'; // filtro activo actualmente
+let activeZona    = '';    // zona activa actualmente
 
 // ── FUNÇÕES UTILITÁRIAS ──
 // Converte número de avaliação (ex: 4.5) em estrelas (ex: ★★★★☆)
@@ -498,10 +512,14 @@ function renderTrainers(filterCat) {
   const grid = document.getElementById('trainers-grid');
   const countEl = document.getElementById('result-count');
 
-  // Filtrar por categoria se não for 'all'
-  const list = filterCat === 'all'
+  // Filtrar por categoria e zona
+  let list = filterCat === 'all'
     ? allTrainers
     : allTrainers.filter(r => CAT[r.fields['Especialidade']] === filterCat);
+
+  if (activeZona) {
+    list = list.filter(r => r.fields['Zona'] === activeZona);
+  }
 
   if (countEl) countEl.textContent = list.length + ' profissionais disponíveis';
 
@@ -616,6 +634,11 @@ function setFilter(btn, cat) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderTrainers(cat);
+}
+
+function setZonaFilter(zona) {
+  activeZona = zona;
+  renderTrainers(activeFilter);
 }
 
 // ── TOAST ──
