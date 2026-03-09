@@ -174,7 +174,27 @@ nav {
 .team-note p { font-size:0.88rem; color:var(--sand); line-height:1.7; margin:0; }
 .team-note strong { color:var(--orange); }
 
-/* LOADING */
+/* EDIT FORM */
+.edit-form { background:var(--mid); border:1px solid var(--border); border-radius:16px; padding:2rem; }
+.edit-form label { display:block; font-size:0.75rem; color:var(--sand); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.4rem; margin-top:1.25rem; }
+.edit-form label:first-child { margin-top:0; }
+.edit-form input, .edit-form textarea, .edit-form select {
+  width:100%; background:var(--mid2); border:1px solid var(--border); border-radius:8px;
+  color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.9rem;
+  padding:0.75rem 1rem; outline:none; transition:border-color 0.2s;
+}
+.edit-form input:focus, .edit-form textarea:focus, .edit-form select:focus { border-color:var(--orange); }
+.edit-form textarea { min-height:120px; resize:vertical; }
+.edit-form select option { background:var(--dark); }
+.edit-form .save-btn {
+  width:100%; background:var(--orange); color:white; border:none; border-radius:12px;
+  padding:1rem; font-family:'Syne',sans-serif; font-weight:700; font-size:1rem;
+  cursor:pointer; margin-top:1.75rem; transition:all 0.2s;
+}
+.edit-form .save-btn:hover { background:var(--orange-light); transform:translateY(-2px); }
+.edit-form .save-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.token-error { text-align:center; padding:3rem; color:var(--muted); }
+.token-error h3 { font-family:'Syne',sans-serif; font-size:1.3rem; margin-bottom:0.75rem; color:var(--white); }
 .loading { grid-column:1/-1; text-align:center; padding:4rem; color:var(--muted); }
 .loading-spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--orange); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
 @keyframes spin { to { transform:rotate(360deg); } }
@@ -308,6 +328,16 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <div class="form-embed">
       <iframe src="https://airtable.com/embed/appCBkBHDMOqS3rbE/pagpWLY9AfXzfTDc1/form" frameborder="0" onmousewheel="" allowfullscreen></iframe>
     </div>
+  </div>
+</div>
+
+<!-- EDITAR PERFIL — Página do link mágico -->
+<div id="edit-page" class="page">
+  <div class="register-inner">
+    <div class="logo" style="margin-bottom:2rem;" onclick="showPage('home')">Fit<span style="color:var(--orange)">List</span></div>
+    <h2>O teu <span>Perfil</span></h2>
+    <p class="sub" id="edit-sub">A carregar os teus dados...</p>
+    <div id="edit-form-container"></div>
   </div>
 </div>
 
@@ -597,11 +627,122 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 3200);
 }
 
+// ── LINK MÁGICO — PÁGINA DE EDIÇÃO ──
+// Carrega os dados do PT pelo token e mostra formulário de edição
+async function loadEditPage(token) {
+  const container = document.getElementById('edit-form-container');
+  const sub = document.getElementById('edit-sub');
+
+  try {
+    // Procura o treinador com este token no Airtable
+    const filter = encodeURIComponent(`{Token}="${token}"`);
+    const res = await fetch(`/.netlify/functions/airtable?action=list&filter=${filter}`);
+    const data = await res.json();
+    const records = data.records || [];
+
+    // Se não encontrar nenhum registo com este token
+    if (records.length === 0) {
+      sub.textContent = '';
+      container.innerHTML = `
+        <div class="token-error">
+          <h3>Link inválido ou expirado</h3>
+          <p>Este link de edição não é válido. Contacta o FitList via WhatsApp para obteres um novo link.</p>
+        </div>`;
+      return;
+    }
+
+    const record = records[0];
+    const f = record.fields;
+    sub.textContent = `Olá ${f['Nome'] ? f['Nome'].split(' ')[0] : ''}! Actualiza o teu perfil abaixo.`;
+
+    // Constrói o formulário com os dados actuais já preenchidos
+    container.innerHTML = `
+      <div class="edit-form">
+        <label>Nome completo</label>
+        <input type="text" id="ef-nome" value="${f['Nome'] || ''}">
+
+        <label>WhatsApp (com indicativo ex: +244923000000)</label>
+        <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
+
+        <label>Especialidade</label>
+        <select id="ef-especialidade">
+          ${['Personal Trainer','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira'].map(e =>
+            `<option ${f['Especialidade']===e?'selected':''}>${e}</option>`
+          ).join('')}
+        </select>
+
+        <label>Zona em Luanda</label>
+        <select id="ef-zona">
+          ${['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga'].map(z =>
+            `<option ${f['Zona']===z?'selected':''}>${z}</option>`
+          ).join('')}
+        </select>
+
+        <label>Preço por sessão (Kz)</label>
+        <input type="number" id="ef-preco" value="${f['Preço por Sessão'] || ''}">
+
+        <label>Anos de experiência</label>
+        <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}">
+
+        <label>Sobre ti (Bio)</label>
+        <textarea id="ef-bio">${f['Bio'] || ''}</textarea>
+
+        <button class="save-btn" onclick="saveEditProfile('${record.id}')">💾 Guardar alterações</button>
+      </div>`;
+
+  } catch(e) {
+    sub.textContent = '';
+    container.innerHTML = `<div class="token-error"><h3>Erro ao carregar</h3><p>Tenta novamente mais tarde.</p></div>`;
+  }
+}
+
+// Guarda as alterações do PT no Airtable
+async function saveEditProfile(recordId) {
+  const btn = document.querySelector('.save-btn');
+  btn.disabled = true;
+  btn.textContent = 'A guardar...';
+
+  const fields = {
+    'Nome': document.getElementById('ef-nome').value,
+    'WhatsApp': document.getElementById('ef-whatsapp').value,
+    'Especialidade': document.getElementById('ef-especialidade').value,
+    'Zona': document.getElementById('ef-zona').value,
+    'Preço por Sessão': Number(document.getElementById('ef-preco').value),
+    'Anos Experiência': Number(document.getElementById('ef-exp').value),
+    'Bio': document.getElementById('ef-bio').value,
+  };
+
+  try {
+    await fetch(`/.netlify/functions/airtable?action=update&id=${recordId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields })
+    });
+    btn.textContent = '✅ Guardado com sucesso!';
+    btn.style.background = 'var(--green)';
+    showToast('Perfil actualizado com sucesso!');
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '💾 Guardar alterações';
+    showToast('Erro ao guardar. Tenta novamente.');
+  }
+}
+
 // ── INICIALIZAÇÃO ──
-// Quando a página carrega, pré-carrega os treinadores em background
-// para que quando o utilizador clicar em "Explorar" já esteja pronto
-loadFallbackData(); // carrega dados de exemplo imediatamente
-loadTrainers();     // tenta carregar do Airtable em background
+// Verifica se o URL tem um token de edição
+// Ex: fitlist-angola.netlify.app/?editar=recXXXXXX
+const urlParams = new URLSearchParams(window.location.search);
+const editToken = urlParams.get('editar');
+
+if (editToken) {
+  // Se tem token, mostra a página de edição directamente
+  showPage('edit');
+  loadEditPage(editToken);
+} else {
+  // Comportamento normal
+  loadFallbackData();
+  loadTrainers();
+}
 
 // Cat pills interactivos
 document.querySelectorAll('.cat-pill').forEach(pill => {
