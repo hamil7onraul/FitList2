@@ -22,7 +22,10 @@ exports.handler = async (event) => {
     }
     if (action === 'update') {
       const id   = event.queryStringParameters?.id;
-      const body = JSON.parse(event.body || '{}');
+      if (!id) return respond(400, { error: 'ID em falta' });
+      let body = {};
+      try { body = JSON.parse(event.body || '{}'); } catch(e) { body = {}; }
+      if (!body.fields) return respond(400, { error: 'Could not find field "fields" in the request body' });
       const res  = await fetch(`${BASE_URL}/${id}`, { method:'PATCH', headers, body: JSON.stringify(body) });
       const data = await res.json();
       return respond(200, data);
