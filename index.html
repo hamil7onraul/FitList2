@@ -447,7 +447,10 @@ function toStars(r) {
 }
 // Formata preço com separador de milhares (ex: 15000 → 15.000 Kz)
 function toPrice(p) {
-  return p ? Number(p).toLocaleString('pt-PT') + ' Kz' : 'Consultar';
+  if (!p) return 'Consultar';
+  const n = Number(p);
+  if (isNaN(n) || p === '') return p;
+  return n.toLocaleString('pt-PT') + ' Kz';
 }
 
 // ── NAVEGAÇÃO ──
