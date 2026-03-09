@@ -249,9 +249,21 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h1>Encontra o teu<br><em>treinador perfeito</em><br>em Angola</h1>
     <p class="hero-sub">Os melhores Personal Trainers e instrutores de Artes Marciais de Luanda — num só lugar. Contacto directo via WhatsApp.</p>
     <div class="search-bar">
-      <select><option>Todas categorias</option><option>Personal Trainer</option><option>Boxe</option><option>Judo</option><option>Muay Thai</option><option>MMA</option><option>Crossfit</option><option>Yoga</option></select>
-      <input type="text" placeholder="Zona (ex: Talatona, Miramar…)">
-      <button onclick="showPage('listings')">Pesquisar →</button>
+      <select id="hero-cat"><option value="">Todas categorias</option><option value="pt">Personal Trainer</option><option value="am">Boxe</option><option value="am">Judo</option><option value="am">Muay Thai</option><option value="am">MMA</option><option value="crossfit">Crossfit</option><option value="yoga">Yoga</option></select>
+      <select style="background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:1.1rem 1.25rem;flex:1;min-width:0;" id="hero-zona">
+        <option value="">📍 Todas as zonas</option>
+        <option>Talatona</option>
+        <option>Miramar</option>
+        <option>Alvalade</option>
+        <option>Viana</option>
+        <option>Benfica</option>
+        <option>Rangel</option>
+        <option>Luanda Sul</option>
+        <option>Cacuaco</option>
+        <option>Mutamba</option>
+        <option>Maianga</option>
+      </select>
+      <button onclick="heroSearch()">Pesquisar →</button>
     </div>
     <div class="cat-row">
       <div class="cat-pill active" onclick="goFilter('all')">🏋️ Todos</div>
@@ -445,6 +457,20 @@ function showPage(page) {
   window.scrollTo({ top:0, behavior:'smooth' });
   // Quando vai para listings, carrega os treinadores
   if (page === 'listings') loadTrainers();
+}
+
+function heroSearch() {
+  const zona = document.getElementById('hero-zona')?.value || '';
+  const cat  = document.getElementById('hero-cat')?.value || '';
+  activeZona = zona;
+  activeFilter = cat || 'all';
+  const zonaFilter = document.getElementById('zona-filter');
+  if (zonaFilter) zonaFilter.value = zona;
+  // Actualiza botões de categoria no Explorar
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const targetBtn = document.querySelector(`.filter-btn[onclick*="'${activeFilter}'"]`);
+  if (targetBtn) targetBtn.classList.add('active');
+  showPage('listings');
 }
 
 function goFilter(cat) {
