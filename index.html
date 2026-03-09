@@ -829,9 +829,6 @@ async function saveEditProfile(recordId) {
     'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value,
   };
-    'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
-    'Bio': document.getElementById('ef-bio').value,
-  };
 
   // Remove campos nulos
   Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
