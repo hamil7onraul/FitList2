@@ -731,7 +731,7 @@ async function saveEditProfile(recordId) {
 
   try {
     await fetch(`/.netlify/functions/airtable?action=update&id=${recordId}`, {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields })
     });
