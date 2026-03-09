@@ -249,7 +249,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h1>Encontra o teu<br><em>treinador perfeito</em><br>em Angola</h1>
     <p class="hero-sub">Os melhores Personal Trainers e instrutores de Artes Marciais de Luanda — num só lugar. Contacto directo via WhatsApp.</p>
     <div class="search-bar">
-      <select id="hero-cat"><option value="">Todas categorias</option><option value="Personal Trainer">Personal Trainer</option><option value="Boxe">Boxe</option><option value="Judo">Judo</option><option value="Muay Thai">Muay Thai</option><option value="MMA">MMA</option><option value="Karaté">Karaté</option><option value="Capoeira">Capoeira</option><option value="Crossfit">Crossfit</option><option value="Yoga / Pilates">Yoga / Pilates</option><option value="Outra">Outra</option></select>
+      <select id="hero-cat"><option value="">Todas categorias</option><option value="Personal Trainer">Personal Trainer</option><option value="am">🥊 Artes Marciais (todas)</option><option value="Boxe">— Boxe</option><option value="Judo">— Judo</option><option value="Muay Thai">— Muay Thai</option><option value="MMA">— MMA</option><option value="Karaté">— Karaté</option><option value="Capoeira">— Capoeira</option><option value="Crossfit">Crossfit</option><option value="Yoga / Pilates">Yoga / Pilates</option><option value="Outra">Outra</option></select>
       <select style="background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:1.1rem 1.25rem;flex:1;min-width:0;" id="hero-zona">
         <option value="">📍 Todas as zonas</option>
         <option>Talatona</option>
@@ -477,7 +477,7 @@ function heroSearch() {
     activeEspec  = '';
   } else {
     activeFilter = 'all';
-    activeEspec  = especMap[catVal] || '';
+    activeEspec  = catVal;
   }
   activeZona = zona;
   const zonaFilter = document.getElementById('zona-filter');
@@ -678,6 +678,8 @@ function openProfile(index) {
 function setFilter(btn, cat) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  activeFilter = cat;
+  activeEspec  = '';
   renderTrainers(cat);
 }
 
