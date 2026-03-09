@@ -603,7 +603,7 @@ function renderTrainers(filterCat) {
           </div>
           <div class="t-card-footer">
             <div class="t-price">${price} <small>/ sessão</small></div>
-            <div class="t-stars">${stars} <span>(${f['Nº Avaliações'] || 0})</span></div>
+            ${f['Avaliação'] ? `<div class="t-stars">${stars} <span>(${f['Nº Avaliações'] || 0})</span></div>` : '<div class="t-stars" style="color:var(--muted);font-size:0.75rem;">Sem avaliações ainda</div>'}
           </div>
         </div>
       </div>`;
@@ -634,7 +634,7 @@ function openProfile(index) {
       <div class="p-spec">${f['Especialidade']}${f['Anos Experiência'] ? ' · ' + f['Anos Experiência'] + ' anos exp.' : ''}</div>
       <div class="p-meta">
         <div class="meta-tag">📍 ${f['Zona']}, Luanda</div>
-        <div class="meta-tag">${stars} (${f['Nº Avaliações'] || 0} avaliações)</div>
+        ${f['Avaliação'] ? `<div class="meta-tag">${stars} (${f['Nº Avaliações'] || 0} avaliações)</div>` : ''}
         ${f['Verificado'] ? '<div class="meta-tag verified-tag">✅ Verificado</div>' : ''}
         <div class="meta-tag">💬 Responde via WhatsApp</div>
       </div>
