@@ -306,7 +306,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2>Junta-te ao<br><span>FitList</span></h2>
     <p class="sub">Preenche o formulário abaixo. Os primeiros 3 meses são completamente grátis. Entramos em contacto via WhatsApp em 24h.</p>
     <div class="form-embed">
-      <iframe src="https://airtable.com/embed/appCBkBHDMOqS3rbE/shrsmgP5JpPV2nyXy" frameborder="0" onmousewheel="" allowfullscreen></iframe>
+      <iframe src="https://airtable.com/embed/appCBkBHDMOqS3rbE/pagpWLY9AfXzfTDc1/form" frameborder="0" onmousewheel="" allowfullscreen></iframe>
     </div>
   </div>
 </div>
@@ -557,10 +557,15 @@ function openProfile(index) {
   // Constrói o link do WhatsApp com mensagem pré-preenchida
   // replace() remove espaços e o símbolo + do número
   const waField = f['WhatsApp'];
+  console.log('WhatsApp field:', JSON.stringify(waField), typeof waField);
   let waNum = '';
-  if (typeof waField === 'string') waNum = waField.replace(/[\s+]/g,'');
-  else if (waField && typeof waField === 'object') waNum = String(waField.number || waField.value || '').replace(/[\s+]/g,'');
-  else waNum = String(waField || '').replace(/[\s+]/g,'');
+  try {
+    if (!waField) waNum = '';
+    else if (typeof waField === 'string') waNum = waField.replace(/[\s+]/g,'');
+    else if (Array.isArray(waField)) waNum = String(waField[0] || '').replace(/[\s+]/g,'');
+    else if (typeof waField === 'object') waNum = String(waField.number || waField.value || waField.text || '').replace(/[\s+]/g,'');
+    else waNum = String(waField).replace(/[\s+]/g,'');
+  } catch(e) { waNum = ''; }
   const waMsg = encodeURIComponent(`Olá ${f['Nome'].split(' ')[0]}! Vi o teu perfil no FitList e gostava de saber mais sobre os teus serviços.`);
 
   document.getElementById('profile-cta').innerHTML = `
