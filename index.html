@@ -759,8 +759,7 @@ if (editToken) {
   showPage('edit');
   loadEditPage(editToken);
 } else {
-  // Comportamento normal
-  loadFallbackData();
+  // Carrega dados reais — fallback só é usado se falhar
   loadTrainers();
 }
 
