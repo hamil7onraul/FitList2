@@ -656,10 +656,20 @@ async function loadEditPage(token) {
     sub.textContent = `Olá ${f['Nome'] ? f['Nome'].split(' ')[0] : ''}! Actualiza o teu perfil abaixo.`;
 
     // Constrói o formulário com os dados actuais já preenchidos
+    const fotoActual = f['Foto']?.[0]?.url;
     container.innerHTML = `
       <div class="edit-form">
+
+        <label>Foto de perfil</label>
+        ${fotoActual ? `<img src="${fotoActual}" style="width:100px;height:100px;object-fit:cover;border-radius:12px;margin-bottom:0.75rem;display:block;">` : '<p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Sem foto ainda</p>'}
+        <input type="file" id="ef-foto" accept="image/*" style="color:var(--muted);font-size:0.82rem;">
+        <p style="font-size:0.7rem;color:var(--muted);margin-top:0.35rem;">Formatos aceites: JPG, PNG. Máximo 5MB.</p>
+
         <label>Nome completo</label>
         <input type="text" id="ef-nome" value="${f['Nome'] || ''}">
+
+        <label>Email</label>
+        <input type="email" id="ef-email" value="${f['Email'] || ''}">
 
         <label>WhatsApp (com indicativo ex: +244923000000)</label>
         <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
@@ -704,13 +714,17 @@ async function saveEditProfile(recordId) {
 
   const fields = {
     'Nome': document.getElementById('ef-nome').value,
+    'Email': document.getElementById('ef-email').value,
     'WhatsApp': document.getElementById('ef-whatsapp').value,
     'Especialidade': document.getElementById('ef-especialidade').value,
     'Zona': document.getElementById('ef-zona').value,
-    'Preço por Sessão': Number(document.getElementById('ef-preco').value),
-    'Anos Experiência': Number(document.getElementById('ef-exp').value),
+    'Preço por Sessão': Number(document.getElementById('ef-preco').value) || null,
+    'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value,
   };
+
+  // Remove campos nulos
+  Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
 
   try {
     await fetch(`/.netlify/functions/airtable?action=update&id=${recordId}`, {
@@ -720,7 +734,13 @@ async function saveEditProfile(recordId) {
     });
     btn.textContent = '✅ Guardado com sucesso!';
     btn.style.background = 'var(--green)';
-    showToast('Perfil actualizado com sucesso!');
+    showToast('Perfil actualizado! As alterações aparecem no site em segundos.');
+
+    // Se há foto nova, mostra instrução — upload de fotos requer solução dedicada
+    const fotoInput = document.getElementById('ef-foto');
+    if (fotoInput && fotoInput.files.length > 0) {
+      showToast('Para actualizar a foto, envia-a via WhatsApp ao FitList.');
+    }
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '💾 Guardar alterações';
