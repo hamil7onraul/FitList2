@@ -688,8 +688,8 @@ async function loadEditPage(token) {
           ).join('')}
         </select>
 
-        <label>Preço por sessão (Kz)</label>
-        <input type="number" id="ef-preco" value="${f['Preço por Sessão'] || ''}">
+        <label>Preço por sessão (Kz) — escreve um número ou "Por definir"</label>
+        <input type="text" id="ef-preco" value="${f['Preço por Sessão'] || ''}">
 
         <label>Anos de experiência</label>
         <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}">
@@ -712,13 +712,16 @@ async function saveEditProfile(recordId) {
   btn.disabled = true;
   btn.textContent = 'A guardar...';
 
+  const precoRaw = document.getElementById('ef-preco').value;
+  const preco = isNaN(Number(precoRaw)) || precoRaw === '' ? precoRaw : Number(precoRaw);
+
   const fields = {
     'Nome': document.getElementById('ef-nome').value,
     'Email': document.getElementById('ef-email').value,
     'WhatsApp': document.getElementById('ef-whatsapp').value,
     'Especialidade': document.getElementById('ef-especialidade').value,
     'Zona': document.getElementById('ef-zona').value,
-    'Preço por Sessão': Number(document.getElementById('ef-preco').value) || null,
+    'Preço por Sessão': preco || null,
     'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value,
   };
