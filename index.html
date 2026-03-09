@@ -642,10 +642,26 @@ function openProfile(index) {
 
   document.getElementById('profile-bio').textContent = f['Bio'] || 'Sem descrição disponível.';
 
+  // Serviços dinâmicos — só aparece o que o PT preencheu
+  const packs = [1,2,3,4,5,6,7];
+  const packCards = packs
+    .filter(n => f[`Preço Pack ${n}x/Semana`])
+    .map(n => {
+      const p = f[`Preço Pack ${n}x/Semana`];
+      const displayPrice = (p === 'Consultar' || p === 'Sob Consulta') ? p : Number(p) ? Number(p).toLocaleString('pt-PT') + ' Kz' : p;
+      return `<div class="svc-card"><div class="svc-name">Pack ${n}x/Semana</div><div class="svc-desc">${n} sess${n===1?'ão':'ões'} por semana</div><div class="svc-price">${displayPrice}</div></div>`;
+    }).join('');
+
+  const consultaPrice = f['Preço Consulta Online'];
+  const consultaDisplay = consultaPrice
+    ? ((consultaPrice === 'Consultar' || consultaPrice === 'Sob Consulta') ? consultaPrice : Number(consultaPrice) ? Number(consultaPrice).toLocaleString('pt-PT') + ' Kz' : consultaPrice)
+    : null;
+
   document.getElementById('profile-services').innerHTML = `
     <div class="svc-card"><div class="svc-name">Sessão Individual</div><div class="svc-desc">1 hora de treino personalizado</div><div class="svc-price">${price}</div></div>
-    <div class="svc-card"><div class="svc-name">Pack Mensal</div><div class="svc-desc">Plano personalizado mensal</div><div class="svc-price">Consultar</div></div>
-    <div class="svc-card"><div class="svc-name">Consulta Online</div><div class="svc-desc">Avaliação e plano de treino</div><div class="svc-price">Consultar</div></div>`;
+    ${packCards}
+    ${consultaDisplay ? `<div class="svc-card"><div class="svc-name">Consulta Online</div><div class="svc-desc">Avaliação e plano de treino</div><div class="svc-price">${consultaDisplay}</div></div>` : ''}
+  `;
 
   // Constrói o link do WhatsApp com mensagem pré-preenchida
   // replace() remove espaços e o símbolo + do número
@@ -758,8 +774,18 @@ async function loadEditPage(token) {
           ).join('')}
         </select>
 
-        <label>Preço por sessão (Kz) — escreve um número ou "Por definir"</label>
+        <label>Preço por sessão (Kz) — escreve um número ou "Sob Consulta"</label>
         <input type="text" id="ef-preco" value="${f['Preço por Sessão'] || ''}">
+
+        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">💡 Preenche apenas os packs que ofereces. Deixa em branco os que não tens.</p>
+          ${[1,2,3,4,5,6,7].map(n => `
+            <label>Pack ${n}x/Semana — ${n} sess${n===1?'ão':'ões'} por semana (Kz ou "Sob Consulta")</label>
+            <input type="text" id="ef-pack${n}" value="${f[`Preço Pack ${n}x/Semana`] || ''}">
+          `).join('')}
+          <label>Consulta Online — Avaliação e plano de treino (Kz ou "Sob Consulta")</label>
+          <input type="text" id="ef-consulta" value="${f['Preço Consulta Online'] || ''}">
+        </div>
 
         <label>Anos de experiência</label>
         <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}">
@@ -792,6 +818,17 @@ async function saveEditProfile(recordId) {
     'Especialidade': document.getElementById('ef-especialidade').value,
     'Zona': document.getElementById('ef-zona').value,
     'Preço por Sessão': preco || null,
+    'Preço Pack 1x/Semana': document.getElementById('ef-pack1').value || null,
+    'Preço Pack 2x/Semana': document.getElementById('ef-pack2').value || null,
+    'Preço Pack 3x/Semana': document.getElementById('ef-pack3').value || null,
+    'Preço Pack 4x/Semana': document.getElementById('ef-pack4').value || null,
+    'Preço Pack 5x/Semana': document.getElementById('ef-pack5').value || null,
+    'Preço Pack 6x/Semana': document.getElementById('ef-pack6').value || null,
+    'Preço Pack 7x/Semana': document.getElementById('ef-pack7').value || null,
+    'Preço Consulta Online': document.getElementById('ef-consulta').value || null,
+    'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
+    'Bio': document.getElementById('ef-bio').value,
+  };
     'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value,
   };
