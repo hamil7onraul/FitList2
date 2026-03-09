@@ -13,8 +13,17 @@ exports.handler = async (event) => {
 
   try {
     if (action === 'list') {
-      const filter = encodeURIComponent(`{Estado}="Aprovado"`);
+      const customFilter = event.queryStringParameters?.filter;
+      const defaultFilter = encodeURIComponent(`{Estado}="Aprovado"`);
+      const filter = customFilter || defaultFilter;
       const res  = await fetch(`${BASE_URL}?filterByFormula=${filter}&sort[0][field]=Nome`, { headers });
+      const data = await res.json();
+      return respond(200, data);
+    }
+    if (action === 'update') {
+      const id   = event.queryStringParameters?.id;
+      const body = JSON.parse(event.body || '{}');
+      const res  = await fetch(`${BASE_URL}/${id}`, { method:'PATCH', headers, body: JSON.stringify(body) });
       const data = await res.json();
       return respond(200, data);
     }
