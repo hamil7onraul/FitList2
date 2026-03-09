@@ -404,8 +404,8 @@ const PUBLIC_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
 
 // ── MAPAS DE EMOJI E CATEGORIA ──
 // Dicionários: associam o nome da especialidade ao emoji e categoria
-const EMOJI = { 'Personal Trainer':'💪','Boxe':'🥊','Judo':'🥋','MMA':'🥷','Muay Thai':'🥊','Crossfit':'🤸','Yoga / Pilates':'🧘','Karaté':'🥋','Capoeira':'🤼' };
-const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am' };
+const EMOJI = { 'Personal Trainer':'💪','Boxe':'🥊','Judo':'🥋','MMA':'🥷','Muay Thai':'🥊','Crossfit':'🤸','Yoga / Pilates':'🧘','Karaté':'🥋','Capoeira':'🤼','Outra':'🏅' };
+const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am','Outra':'pt' };
 
 // ── ESTADO DA APP ──
 // Variáveis globais que guardam os dados durante a sessão
@@ -730,11 +730,17 @@ async function saveEditProfile(recordId) {
   Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
 
   try {
-    await fetch(`/.netlify/functions/airtable?action=update&id=${recordId}`, {
+    console.log('A guardar fields:', JSON.stringify({ fields }));
+    const res = await fetch(`/.netlify/functions/airtable?action=update&id=${recordId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields })
     });
+    const data = await res.json();
+    console.log('Resposta do servidor:', JSON.stringify(data));
+    if (data.error) {
+      throw new Error(data.error.message || JSON.stringify(data.error));
+    }
     btn.textContent = '✅ Guardado com sucesso!';
     btn.style.background = 'var(--green)';
     showToast('Perfil actualizado! As alterações aparecem no site em segundos.');
