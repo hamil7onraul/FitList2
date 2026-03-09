@@ -718,7 +718,7 @@ async function saveEditProfile(recordId) {
   const fields = {
     'Nome': document.getElementById('ef-nome').value,
     'Email': document.getElementById('ef-email').value,
-    'WhatsApp': document.getElementById('ef-whatsapp').value,
+    'WhatsApp': Number(document.getElementById('ef-whatsapp').value.replace(/[\s+]/g,'')) || null,
     'Especialidade': document.getElementById('ef-especialidade').value,
     'Zona': document.getElementById('ef-zona').value,
     'Preço por Sessão': preco || null,
