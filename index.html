@@ -732,6 +732,15 @@ function openProfile(index) {
       Contactar via WhatsApp
     </a>`;
 
+  // Botão de denúncia discreto
+  document.getElementById('profile-cta').insertAdjacentHTML('afterend',
+    `<div style="text-align:center;margin-top:1rem;padding-bottom:2rem;">
+      <a href="https://wa.me/351931916420?text=${encodeURIComponent(`Denúncia de conteúdo no perfil: ${f['Nome']} — por favor verifica o conteúdo deste perfil no FitList.`)}" target="_blank" style="font-size:0.7rem;color:var(--muted);text-decoration:none;opacity:0.5;">
+        ⚑ Denunciar conteúdo inapropriado
+      </a>
+    </div>`
+  );
+
   showPage('profile');
 }
 
