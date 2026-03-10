@@ -208,6 +208,22 @@ footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; ju
 .footer-links a:hover { color:var(--white); }
 footer p { font-size:0.72rem; color:var(--muted); }
 
+/* ── GALERIA ── */
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; }
+.gallery-item { aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--mid); cursor: pointer; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+.gallery-item img:hover { transform: scale(1.05); }
+.gallery-item video { width: 100%; height: 100%; object-fit: cover; }
+.gallery-lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.gallery-lightbox img, .gallery-lightbox video { max-width: 100%; max-height: 90vh; border-radius: 12px; }
+.gallery-lightbox-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: white; font-size: 2rem; cursor: pointer; }
+.upload-area { border: 2px dashed var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; cursor: pointer; margin-bottom: 1rem; transition: border-color 0.2s; color: var(--muted); font-size: 0.85rem; }
+.upload-area:hover { border-color: var(--orange); }
+.upload-preview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; }
+.upload-preview-item { aspect-ratio: 1; border-radius: 8px; overflow: hidden; position: relative; background: var(--mid); }
+.upload-preview-item img, .upload-preview-item video { width: 100%; height: 100%; object-fit: cover; }
+.upload-preview-item .remove-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); border: none; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 0.7rem; }
+
 /* TOAST */
 .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); background:var(--green); color:#fff; padding:0.9rem 2rem; border-radius:100px; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; z-index:999; animation:toastIn 0.4s ease, toastOut 0.4s 2.5s ease forwards; white-space:nowrap; box-shadow:0 8px 32px rgba(0,0,0,0.4); }
 @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
@@ -338,6 +354,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <button class="back-btn" onclick="showPage('listings')">← Voltar aos resultados</button>
     <div class="profile-top" id="profile-top"></div>
     <p class="p-bio" id="profile-bio"></p>
+    <div id="profile-gallery-section"></div>
     <div class="p-section-title">Serviços & Preços</div>
     <div class="services-grid" id="profile-services"></div>
     <div class="wa-cta" id="profile-cta"></div>
@@ -645,6 +662,29 @@ function openProfile(index) {
 
   document.getElementById('profile-bio').textContent = f['Bio'] || 'Sem descrição disponível.';
 
+  // Galeria — combina fotos do Airtable com URLs do Cloudinary
+  const fotoAirtable = f['Foto'] || [];
+  const galeriaCloudinary = f['Galeria Cloudinary'] ? f['Galeria Cloudinary'].split(',').map(url => ({ url: url.trim(), type: url.includes('.mp4') || url.includes('/video/') ? 'video/mp4' : 'image/jpeg' })) : [];
+  const todasFotos = [...fotoAirtable, ...galeriaCloudinary];
+  const galeriaSection = document.getElementById('profile-gallery-section');
+  if (todasFotos.length > 1) {
+    galeriaSection.innerHTML = `
+      <div class="p-section-title">Fotos & Vídeos</div>
+      <div class="gallery-grid">
+        ${todasFotos.map((item, i) => {
+          const isVideo = item.type && item.type.startsWith('video');
+          return `<div class="gallery-item" onclick="openLightbox('${item.url}', ${isVideo})">
+            ${isVideo
+              ? `<video src="${item.url}" muted playsinline></video>`
+              : `<img src="${item.thumbnails?.large?.url || item.url}" alt="Foto ${i+1}">`
+            }
+          </div>`;
+        }).join('')}
+      </div>`;
+  } else {
+    galeriaSection.innerHTML = '';
+  }
+
   // Serviços dinâmicos — só aparece o que o PT preencheu
   const packs = [1,2,3,4,5,6,7];
   const packCards = packs
@@ -707,6 +747,36 @@ function setZonaFilter(zona) {
   renderTrainers(activeFilter);
 }
 
+// ── LIGHTBOX ──
+function openLightbox(url, isVideo) {
+  const lb = document.createElement('div');
+  lb.className = 'gallery-lightbox';
+  lb.innerHTML = `
+    <button class="gallery-lightbox-close" onclick="this.parentElement.remove()">✕</button>
+    ${isVideo
+      ? `<video src="${url}" controls autoplay style="max-width:100%;max-height:90vh;border-radius:12px;"></video>`
+      : `<img src="${url}" alt="Foto">`
+    }`;
+  lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
+  document.body.appendChild(lb);
+}
+
+// ── CLOUDINARY UPLOAD ──
+const CLOUDINARY_CLOUD = 'dxulymbhw';
+const CLOUDINARY_PRESET = 'fitlist_uploads';
+
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
+    method: 'POST',
+    body: formData
+  });
+  const data = await res.json();
+  return data.secure_url;
+}
+
 // ── TOAST ──
 function showToast(msg) {
   const t = document.createElement('div');
@@ -714,6 +784,19 @@ function showToast(msg) {
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3200);
+}
+
+// ── PREVIEW GALERIA ──
+function previewGallery(input) {
+  const preview = document.getElementById('gallery-preview');
+  const files = Array.from(input.files).slice(0, 9);
+  preview.innerHTML = files.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    const isVideo = file.type.startsWith('video');
+    return `<div class="upload-preview-item">
+      ${isVideo ? `<video src="${url}" muted></video>` : `<img src="${url}">`}
+    </div>`;
+  }).join('');
 }
 
 // ── LINK MÁGICO — PÁGINA DE EDIÇÃO ──
@@ -746,6 +829,8 @@ async function loadEditPage(token) {
 
     // Constrói o formulário com os dados actuais já preenchidos
     const fotoActual = f['Foto']?.[0]?.url;
+    const galeriaCloudinaryEdit = f['Galeria Cloudinary'] ? f['Galeria Cloudinary'].split(',').map(url => ({ url: url.trim(), type: url.includes('.mp4') || url.includes('/video/') ? 'video/mp4' : 'image/jpeg' })) : [];
+    const galeria = [...(f['Foto'] || []), ...galeriaCloudinaryEdit];
     container.innerHTML = `
       <div class="edit-form">
 
@@ -796,6 +881,27 @@ async function loadEditPage(token) {
         <label>Sobre ti (Bio)</label>
         <textarea id="ef-bio">${f['Bio'] || ''}</textarea>
 
+        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
+          <label style="margin-bottom:0.5rem;">📸 Galeria de Fotos & Vídeos</label>
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Adiciona fotos e vídeos do teu trabalho. Máximo 9 ficheiros. JPG, PNG, MP4.</p>
+          ${galeria.length > 0 ? `
+            <div class="upload-preview" id="current-gallery">
+              ${galeria.map((item, i) => {
+                const isVideo = item.type && item.type.startsWith('video');
+                return `<div class="upload-preview-item">
+                  ${isVideo ? `<video src="${item.url}" muted></video>` : `<img src="${item.thumbnails?.small?.url || item.url}">`}
+                </div>`;
+              }).join('')}
+            </div>
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Galeria actual — para remover fotos contacta o FitList.</p>
+          ` : ''}
+          <div class="upload-area" onclick="document.getElementById('ef-galeria').click()">
+            📁 Clica para adicionar fotos ou vídeos
+          </div>
+          <input type="file" id="ef-galeria" accept="image/*,video/*" multiple style="display:none;" onchange="previewGallery(this)">
+          <div class="upload-preview" id="gallery-preview"></div>
+        </div>
+
         <button class="save-btn" onclick="saveEditProfile('${record.id}')">💾 Guardar alterações</button>
       </div>`;
 
@@ -813,6 +919,22 @@ async function saveEditProfile(recordId) {
 
   const precoRaw = document.getElementById('ef-preco').value;
   const preco = isNaN(Number(precoRaw)) || precoRaw === '' ? precoRaw : Number(precoRaw);
+
+  // Upload de galeria para Cloudinary
+  const galeriaInput = document.getElementById('ef-galeria');
+  const galeriaFiles = galeriaInput ? Array.from(galeriaInput.files).slice(0, 9) : [];
+  let galeriaUrls = [];
+  if (galeriaFiles.length > 0) {
+    btn.textContent = `A carregar ${galeriaFiles.length} ficheiro(s)...`;
+    try {
+      galeriaUrls = await Promise.all(galeriaFiles.map(f => uploadToCloudinary(f)));
+    } catch(e) {
+      showToast('Erro ao carregar ficheiros. Tenta novamente.');
+      btn.disabled = false;
+      btn.textContent = '💾 Guardar alterações';
+      return;
+    }
+  }
 
   const fields = {
     'Nome': document.getElementById('ef-nome').value,
@@ -833,30 +955,28 @@ async function saveEditProfile(recordId) {
     'Bio': document.getElementById('ef-bio').value,
   };
 
+  // Adiciona URLs da galeria se houver novos uploads
+  if (galeriaUrls.length > 0) {
+    fields['Galeria Cloudinary'] = galeriaUrls.join(',');
+  }
+
   // Remove campos nulos
   Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
 
   try {
-    console.log('A guardar fields:', JSON.stringify({ fields }));
+    btn.textContent = 'A guardar...';
     const res = await fetch(`/airtable?action=update&id=${recordId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fields })
     });
     const data = await res.json();
-    console.log('Resposta do servidor:', JSON.stringify(data));
     if (data.error) {
       throw new Error(data.error.message || JSON.stringify(data.error));
     }
     btn.textContent = '✅ Guardado com sucesso!';
     btn.style.background = 'var(--green)';
     showToast('Perfil actualizado! As alterações aparecem no site em segundos.');
-
-    // Se há foto nova, mostra instrução — upload de fotos requer solução dedicada
-    const fotoInput = document.getElementById('ef-foto');
-    if (fotoInput && fotoInput.files.length > 0) {
-      showToast('Para actualizar a foto, envia-a via WhatsApp ao FitList.');
-    }
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '💾 Guardar alterações';
