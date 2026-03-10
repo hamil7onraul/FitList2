@@ -199,6 +199,32 @@ nav {
 .loading-spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--orange); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
+/* ── PARCEIROS ── */
+.parceiros-inner { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+.parceiros-hero { text-align: center; margin-bottom: 4rem; }
+.parceiros-hero h2 { font-family: 'Syne', sans-serif; font-size: 2.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 1rem; }
+.parceiros-hero p { color: var(--muted); font-size: 1rem; max-width: 520px; margin: 0 auto 2rem; }
+.coming-badge { display: inline-block; background: rgba(232,80,10,0.12); border: 1px solid rgba(232,80,10,0.3); color: var(--orange); border-radius: 100px; padding: 0.35rem 1rem; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1.5rem; }
+.parceiros-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 4rem; }
+.parceiro-card { background: var(--mid); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem 1.5rem; text-align: center; position: relative; overflow: hidden; }
+.parceiro-card.destaque { border-color: rgba(232,80,10,0.4); background: rgba(232,80,10,0.06); }
+.parceiro-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.parceiro-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
+.parceiro-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.parceiro-tag { display: inline-block; background: var(--mid2); border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.68rem; color: var(--muted); margin-top: 0.75rem; }
+.parceiros-form-section { background: var(--mid); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; margin-bottom: 3rem; }
+.parceiros-form-section h3 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.5rem; }
+.parceiros-form-section p { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.75rem; }
+.parceiros-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.parceiros-form input, .parceiros-form select, .parceiros-form textarea { background: var(--mid2); border: 1px solid var(--border); border-radius: 10px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.88rem; padding: 0.75rem 1rem; outline: none; transition: border-color 0.2s; width: 100%; }
+.parceiros-form input:focus, .parceiros-form select:focus, .parceiros-form textarea:focus { border-color: var(--orange); }
+.parceiros-form select option { background: var(--dark); }
+.parceiros-form .full { grid-column: 1 / -1; }
+.parceiros-form textarea { min-height: 90px; resize: vertical; }
+.parceiros-submit { background: var(--orange); color: white; border: none; border-radius: 12px; padding: 0.9rem 2rem; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; margin-top: 0.5rem; }
+.parceiros-submit:hover { background: var(--orange-light); transform: translateY(-2px); }
+@media(max-width:768px) { .parceiros-grid { grid-template-columns: 1fr; } .parceiros-form { grid-template-columns: 1fr; } .parceiros-hero h2 { font-size: 2rem; } }
+
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; background:var(--dark); }
 .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
@@ -234,7 +260,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
 @media(max-width:768px){
   nav { padding:1rem 1.25rem; }
   .nav-link:not(.btn-orange){ display:none; }
-  .hero,#listings-page,#profile-page,#register-page,#about-page { padding-left:1.25rem; padding-right:1.25rem; }
+  .hero,#listings-page,#profile-page,#register-page,#about-page,#parceiros-page { padding-left:1.25rem; padding-right:1.25rem; }
   .hero h1 { font-size:2.8rem; }
   .profile-top { grid-template-columns:1fr; }
   .hero-stats { gap:1.75rem; }
@@ -252,6 +278,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   <div class="logo" onclick="showPage('home')">Fit<span>List</span></div>
   <div class="nav-right">
     <button class="nav-link" onclick="showPage('listings')">Explorar</button>
+    <button class="nav-link" onclick="showPage('parceiros')">Parceiros</button>
     <button class="nav-link" onclick="showPage('about')">Sobre</button>
     <button class="btn-orange" onclick="showPage('register')">Sou Treinador</button>
   </div>
@@ -404,10 +431,74 @@ footer p { font-size:0.72rem; color:var(--muted); }
   </div>
 </div>
 
+<!-- PARCEIROS -->
+<div id="parceiros-page" class="page">
+  <div class="parceiros-inner">
+    <button class="back-btn" onclick="showPage('home')">← Voltar</button>
+
+    <div class="parceiros-hero">
+      <div class="coming-badge">🚀 Em Breve</div>
+      <h2>O ecossistema fitness<br><span>de Angola</span></h2>
+      <p>Mais do que treinadores. Ginásios, eventos, marcas e lojas — tudo num só lugar. Junta-te aos primeiros parceiros do FitList.</p>
+    </div>
+
+    <div class="parceiros-grid">
+      <div class="parceiro-card destaque">
+        <div class="parceiro-icon">🏋️</div>
+        <div class="parceiro-title">Ginásios & Academias</div>
+        <div class="parceiro-desc">Aparece no FitList e recebe clientes novos todos os meses. Desconto exclusivo para membros FitList.</div>
+        <div class="parceiro-tag">Em breve</div>
+      </div>
+      <div class="parceiro-card">
+        <div class="parceiro-icon">🏃</div>
+        <div class="parceiro-title">Eventos & Corridas</div>
+        <div class="parceiro-desc">Promove o teu evento para milhares de atletas e entusiastas do fitness em Luanda.</div>
+        <div class="parceiro-tag">Em breve</div>
+      </div>
+      <div class="parceiro-card">
+        <div class="parceiro-icon">💊</div>
+        <div class="parceiro-title">Marcas & Lojas</div>
+        <div class="parceiro-desc">Suplementos, roupa desportiva, comida fitness. Chega ao público certo no momento certo.</div>
+        <div class="parceiro-tag">Em breve</div>
+      </div>
+    </div>
+
+    <div class="parceiros-form-section">
+      <h3>Queres ser parceiro?</h3>
+      <p>Deixa os teus dados e entramos em contacto assim que abrirmos as parcerias. Os primeiros a inscrever-se têm condições especiais.</p>
+      <div class="parceiros-form" id="parceiros-form">
+        <input type="text" id="p-nome" placeholder="Nome da empresa / ginásio *">
+        <input type="text" id="p-contacto" placeholder="WhatsApp ou email *">
+        <select id="p-tipo">
+          <option value="">Tipo de parceiro *</option>
+          <option>Ginásio / Academia</option>
+          <option>Evento / Corrida</option>
+          <option>Loja de Suplementos</option>
+          <option>Marca de Roupa Desportiva</option>
+          <option>Comida Fitness / Nutrição</option>
+          <option>Outro</option>
+        </select>
+        <input type="text" id="p-zona" placeholder="Zona em Luanda">
+        <textarea id="p-msg" class="full" placeholder="Conta-nos um pouco sobre o teu negócio (opcional)"></textarea>
+        <div class="full">
+          <button class="parceiros-submit" onclick="submitParceiro()">📩 Quero ser parceiro</button>
+        </div>
+      </div>
+      <div id="parceiros-success" style="display:none;text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🎉</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:0.5rem;">Recebido!</div>
+        <p style="color:var(--muted);font-size:0.85rem;">Entramos em contacto via WhatsApp em breve. Obrigado pelo interesse!</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <footer>
   <div class="footer-logo">Fit<span>List</span></div>
   <div class="footer-links">
     <a onclick="showPage('listings')">Explorar</a>
+    <a onclick="showPage('parceiros')">Parceiros</a>
     <a onclick="showPage('register')">Sou Treinador</a>
     <a onclick="showPage('about')">Sobre</a>
   </div>
@@ -864,6 +955,26 @@ function removeGalleryItem(index, url) {
   const item = document.getElementById(`gallery-item-${index}`);
   if (item) item.remove();
   showToast('Foto removida. Clica em Guardar para confirmar.');
+}
+
+// ── PARCEIROS ──
+function submitParceiro() {
+  const nome = document.getElementById('p-nome').value.trim();
+  const contacto = document.getElementById('p-contacto').value.trim();
+  const tipo = document.getElementById('p-tipo').value;
+  const zona = document.getElementById('p-zona').value.trim();
+  const msg = document.getElementById('p-msg').value.trim();
+
+  if (!nome || !contacto || !tipo) {
+    showToast('Preenche os campos obrigatórios (*)');
+    return;
+  }
+
+  const texto = `🤝 *Novo Pedido de Parceria FitList*\n\n*Empresa:* ${nome}\n*Tipo:* ${tipo}\n*Contacto:* ${contacto}${zona ? `\n*Zona:* ${zona}` : ''}${msg ? `\n*Mensagem:* ${msg}` : ''}`;
+  window.open(`https://wa.me/351931916420?text=${encodeURIComponent(texto)}`, '_blank');
+
+  document.getElementById('parceiros-form').style.display = 'none';
+  document.getElementById('parceiros-success').style.display = 'block';
 }
 
 // ── RETIRAR FOTO PERFIL ──
