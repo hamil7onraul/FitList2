@@ -604,7 +604,7 @@ function renderTrainers(filterCat) {
     const badge   = f['Verificado']
       ? '<div class="card-badge badge-verified">✓ Verificado</div>'
       : '';
-    const foto    = f['Foto Perfil'] || f['Foto']?.[0]?.url;
+    const foto    = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : f['Foto']?.[0]?.url;
     const imgHTML = foto
       ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" alt="${f['Nome']}">`
       : emoji;
@@ -642,7 +642,7 @@ function openProfile(index) {
   const cls    = CAT[f['Especialidade']] || 'pt';
   const stars  = toStars(f['Avaliação']);
   const price  = toPrice(f['Preço por Sessão']);
-  const fotoUrl = f['Foto Perfil'] || f['Foto']?.[0]?.url;
+  const fotoUrl = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : f['Foto']?.[0]?.url;
   const avatar = fotoUrl
     ? `<img src="${fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${f['Nome']}">`
     : emoji;
@@ -1150,19 +1150,18 @@ async function saveEditProfile(recordId) {
   if (fotoPerfil) {
     fields['Foto Perfil'] = fotoPerfil;
   } else if (document.getElementById('ef-foto-removed')?.value === 'true') {
-    fields['Foto Perfil'] = '';
+    fields['Foto Perfil'] = 'REMOVED';
   }
 
   // Adiciona URLs da galeria se houver novos uploads
   if (galeriaUrls.length > 0) {
-    // Acumula com as URLs existentes
     const existingUrls = document.getElementById('ef-galeria-existing')?.value || '';
     const allUrls = [existingUrls, ...galeriaUrls].filter(Boolean).join(',');
     fields['Galeria Cloudinary'] = allUrls;
   }
 
-  // Remove campos nulos
-  Object.keys(fields).forEach(k => { if (fields[k] === null || fields[k] === '') delete fields[k]; });
+  // Remove campos nulos — excepto Foto Perfil que pode ser REMOVED
+  Object.keys(fields).forEach(k => { if (k !== 'Foto Perfil' && (fields[k] === null || fields[k] === '')) delete fields[k]; });
 
   try {
     btn.textContent = 'A guardar...';
