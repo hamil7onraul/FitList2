@@ -857,6 +857,14 @@ function removeGalleryItem(index, url) {
   showToast('Foto removida. Clica em Guardar para confirmar.');
 }
 
+// ── RETIRAR FOTO PERFIL ──
+function removeFotoPerfil() {
+  document.getElementById('ef-foto-removed').value = 'true';
+  const container = document.getElementById('foto-preview-container');
+  container.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>`;
+  showToast('Foto removida. Clica em Guardar para confirmar.');
+}
+
 // ── GERAR THUMBNAIL DE VÍDEO ──
 function generateVideoThumb(video) {
   video.currentTime = 1;
@@ -888,35 +896,39 @@ function previewFotoPerfil(input) {
 // ── PREVIEW GALERIA ──
 function previewGallery(input) {
   const preview = document.getElementById('gallery-preview');
-  const files = Array.from(input.files).slice(0, 9);
   preview.innerHTML = '';
-  files.forEach((file, i) => {
+  const files = Array.from(input.files).slice(0, 9);
+  files.forEach((file) => {
     const div = document.createElement('div');
     div.className = 'upload-preview-item';
     const isVideo = file.type.startsWith('video');
     if (isVideo) {
-      // Gera thumbnail do vídeo via canvas
-      const video = document.createElement('video');
-      video.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.src = URL.createObjectURL(file);
-      video.addEventListener('loadeddata', () => {
-        video.currentTime = 1;
+      const objUrl = URL.createObjectURL(file);
+      const img = document.createElement('img');
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      // Usa vídeo oculto para capturar frame
+      const vid = document.createElement('video');
+      vid.src = objUrl;
+      vid.muted = true;
+      vid.playsInline = true;
+      vid.preload = 'auto';
+      vid.style.display = 'none';
+      // Enquanto carrega mostra ícone
+      img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23333" width="100" height="100"/><text y="55" x="50" text-anchor="middle" font-size="40">🎥</text></svg>';
+      vid.addEventListener('loadeddata', () => {
+        vid.currentTime = 0.5;
       });
-      video.addEventListener('seeked', () => {
+      vid.addEventListener('seeked', () => {
         const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth || 200;
-        canvas.height = video.videoHeight || 200;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        const img = document.createElement('img');
-        img.src = canvas.toDataURL('image/jpeg');
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-        div.innerHTML = '';
-        div.appendChild(img);
+        canvas.width = vid.videoWidth;
+        canvas.height = vid.videoHeight;
+        canvas.getContext('2d').drawImage(vid, 0, 0);
+        img.src = canvas.toDataURL('image/jpeg', 0.8);
+        URL.revokeObjectURL(objUrl);
       });
-      div.appendChild(video);
+      document.body.appendChild(vid); // precisa estar no DOM
+      div.appendChild(img);
+      setTimeout(() => document.body.removeChild(vid), 5000);
     } else {
       const img = document.createElement('img');
       img.src = URL.createObjectURL(file);
@@ -970,13 +982,18 @@ async function loadEditPage(token) {
               : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>`
             }
           </div>
-          <div>
+          <div style="display:flex;flex-direction:column;gap:0.4rem;">
             <button type="button" onclick="document.getElementById('ef-foto').click()" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">
               ${(f['Foto Perfil'] || fotoActual) ? '📷 Alterar foto' : '📷 Adicionar foto'}
             </button>
-            <p style="font-size:0.68rem;color:var(--muted);margin-top:0.35rem;">JPG ou PNG. Máximo 5MB.</p>
+            ${(f['Foto Perfil'] || fotoActual) ? `
+            <button type="button" onclick="removeFotoPerfil()" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">
+              🗑️ Retirar foto
+            </button>` : ''}
+            <p style="font-size:0.68rem;color:var(--muted);">JPG ou PNG. Máximo 5MB.</p>
           </div>
         </div>
+        <input type="hidden" id="ef-foto-removed" value="false">
         <input type="file" id="ef-foto" accept="image/*" style="display:none;" onchange="previewFotoPerfil(this)">
 
         <label>Nome completo</label>
@@ -1029,9 +1046,13 @@ async function loadEditPage(token) {
             <div class="upload-preview" id="current-gallery">
               ${galeriaCloudinaryEdit.map((item, i) => {
                 const isVideo = item.type && item.type.startsWith('video');
+                const posterUrl = isVideo ? item.url.replace(/\.[^.]+$/, '.jpg') : null;
                 return `<div class="upload-preview-item" id="gallery-item-${i}">
                   ${isVideo
-                    ? `<video src="${item.url}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;" onloadeddata="generateVideoThumb(this)"></video>`
+                    ? `<div style="position:relative;width:100%;height:100%;">
+                        <img src="${posterUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:1.5rem;">🎥</div>
+                       </div>`
                     : `<img src="${item.thumbnails?.small?.url || item.url}" style="width:100%;height:100%;object-fit:cover;">`
                   }
                   <button class="remove-btn" onclick="removeGalleryItem(${i}, '${item.url}')">✕</button>
@@ -1126,7 +1147,11 @@ async function saveEditProfile(recordId) {
     'Bio': document.getElementById('ef-bio').value,
   };
 
-  if (fotoPerfil) fields['Foto Perfil'] = fotoPerfil;
+  if (fotoPerfil) {
+    fields['Foto Perfil'] = fotoPerfil;
+  } else if (document.getElementById('ef-foto-removed')?.value === 'true') {
+    fields['Foto Perfil'] = '';
+  }
 
   // Adiciona URLs da galeria se houver novos uploads
   if (galeriaUrls.length > 0) {
