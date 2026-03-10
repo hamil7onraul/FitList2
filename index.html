@@ -144,10 +144,17 @@ nav {
 .wa-cta { position:sticky; bottom:1rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-top:2rem; gap:0.75rem; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
 .wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; }
 .wa-cta-left .price-sub { font-size:0.7rem; color:var(--muted); margin-top:0.1rem; }
-.wa-btn { display:inline-flex; align-items:center; gap:0.5rem; background:#25D366; color:#000; border:none; padding:0.75rem 1.25rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.82rem; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; }
+.wa-btn { display:inline-flex; align-items:center; gap:0.5rem; background:#25D366; color:#000; border:none; padding:0.75rem 1.25rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.82rem; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; flex-shrink:0; }
 .wa-btn:hover { background:#20c05c; transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,211,102,0.25); }
-.wa-btn svg { width:16px; height:16px; }
-@media(max-width:480px) { .wa-cta { padding:0.75rem 1rem; } .wa-cta-left .price-big { font-size:1rem; } .wa-btn { padding:0.65rem 1rem; font-size:0.78rem; } }
+.wa-btn svg { width:16px; height:16px; flex-shrink:0; }
+@media(max-width:480px) {
+  .wa-cta { padding:0.75rem 1rem; gap:0.5rem; }
+  .wa-cta-left { min-width:0; flex:1; }
+  .wa-cta-left .price-big { font-size:0.95rem; }
+  .wa-cta-left .price-sub { font-size:0.65rem; }
+  .wa-btn { padding:0.65rem 0.85rem; font-size:0.75rem; gap:0.3rem; }
+  .wa-btn svg { width:14px; height:14px; }
+}
 
 /* REGISTER - Airtable Form Embed */
 #register-page { padding:7rem 3rem 5rem; min-height:100vh; }
@@ -794,16 +801,29 @@ function lightboxNav(dir) {
 const CLOUDINARY_CLOUD = 'dxulymbhw';
 const CLOUDINARY_PRESET = 'fitlist_uploads';
 
-async function uploadToCloudinary(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', CLOUDINARY_PRESET);
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, {
-    method: 'POST',
-    body: formData
+async function uploadToCloudinary(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_PRESET);
+
+    xhr.upload.addEventListener('progress', e => {
+      if (e.lengthComputable && onProgress) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      const data = JSON.parse(xhr.responseText);
+      if (data.secure_url) resolve(data.secure_url);
+      else reject(new Error('Upload falhou'));
+    });
+
+    xhr.addEventListener('error', () => reject(new Error('Erro de rede')));
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`);
+    xhr.send(formData);
   });
-  const data = await res.json();
-  return data.secure_url;
 }
 
 // ── TOAST ──
@@ -834,7 +854,10 @@ function previewGallery(input) {
     const url = URL.createObjectURL(file);
     const isVideo = file.type.startsWith('video');
     return `<div class="upload-preview-item">
-      ${isVideo ? `<video src="${url}" muted></video>` : `<img src="${url}">`}
+      ${isVideo
+        ? `<video src="${url}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
+        : `<img src="${url}">`
+      }
     </div>`;
   }).join('');
 }
@@ -966,9 +989,11 @@ async function saveEditProfile(recordId) {
   const fotoInput = document.getElementById('ef-foto');
   let fotoPerfil = null;
   if (fotoInput && fotoInput.files.length > 0) {
-    btn.textContent = 'A carregar foto de perfil...';
+    btn.textContent = 'A carregar foto de perfil... 0%';
     try {
-      fotoPerfil = await uploadToCloudinary(fotoInput.files[0]);
+      fotoPerfil = await uploadToCloudinary(fotoInput.files[0], pct => {
+        btn.textContent = `A carregar foto de perfil... ${pct}%`;
+      });
     } catch(e) {
       showToast('Erro ao carregar foto de perfil. Tenta novamente.');
       btn.disabled = false;
@@ -982,9 +1007,16 @@ async function saveEditProfile(recordId) {
   const galeriaFiles = galeriaInput ? Array.from(galeriaInput.files).slice(0, 9) : [];
   let galeriaUrls = [];
   if (galeriaFiles.length > 0) {
-    btn.textContent = `A carregar ${galeriaFiles.length} ficheiro(s)...`;
     try {
-      galeriaUrls = await Promise.all(galeriaFiles.map(f => uploadToCloudinary(f)));
+      let uploaded = 0;
+      galeriaUrls = await Promise.all(galeriaFiles.map(async (f, i) => {
+        const url = await uploadToCloudinary(f, pct => {
+          btn.textContent = `A carregar ficheiro ${i+1}/${galeriaFiles.length}... ${pct}%`;
+        });
+        uploaded++;
+        btn.textContent = `${uploaded}/${galeriaFiles.length} ficheiros carregados ✓`;
+        return url;
+      }));
     } catch(e) {
       showToast('Erro ao carregar ficheiros. Tenta novamente.');
       btn.disabled = false;
