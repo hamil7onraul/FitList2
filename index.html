@@ -141,19 +141,19 @@ nav {
 .svc-name { font-weight:500; font-size:0.9rem; margin-bottom:0.25rem; }
 .svc-desc { font-size:0.73rem; color:var(--muted); margin-bottom:0.8rem; line-height:1.5; }
 .svc-price { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; color:var(--orange); }
-.wa-cta { position:sticky; bottom:1rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-top:2rem; gap:0.75rem; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
-.wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; }
+.wa-cta { position:sticky; bottom:1rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-top:2rem; gap:0.75rem; box-shadow:0 20px 60px rgba(0,0,0,0.6); overflow:hidden; }
+.wa-cta-left { flex:1; min-width:0; }
+.wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .wa-cta-left .price-sub { font-size:0.7rem; color:var(--muted); margin-top:0.1rem; }
 .wa-btn { display:inline-flex; align-items:center; gap:0.5rem; background:#25D366; color:#000; border:none; padding:0.75rem 1.25rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.82rem; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; flex-shrink:0; }
 .wa-btn:hover { background:#20c05c; transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,211,102,0.25); }
 .wa-btn svg { width:16px; height:16px; flex-shrink:0; }
 @media(max-width:480px) {
-  .wa-cta { padding:0.75rem 1rem; gap:0.5rem; }
-  .wa-cta-left { min-width:0; flex:1; }
+  .wa-cta { padding:0.7rem 0.9rem; gap:0.5rem; }
   .wa-cta-left .price-big { font-size:0.95rem; }
-  .wa-cta-left .price-sub { font-size:0.65rem; }
-  .wa-btn { padding:0.65rem 0.85rem; font-size:0.75rem; gap:0.3rem; }
-  .wa-btn svg { width:14px; height:14px; }
+  .wa-cta-left .price-sub { font-size:0.62rem; }
+  .wa-btn { padding:0.6rem 0.8rem; font-size:0.73rem; gap:0.25rem; }
+  .wa-btn svg { width:13px; height:13px; }
 }
 
 /* REGISTER - Airtable Form Embed */
@@ -797,6 +797,25 @@ function lightboxNav(dir) {
   renderLightbox();
 }
 
+// ── COMPRIMIR IMAGEM ANTES DE UPLOAD ──
+async function compressImage(file, maxWidth = 1200) {
+  if (file.type.startsWith('video')) return file; // vídeos não comprime
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ratio = Math.min(1, maxWidth / img.width);
+      canvas.width = img.width * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => resolve(new File([blob], file.name, { type: 'image/jpeg' })), 'image/jpeg', 0.82);
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+}
+
 // ── CLOUDINARY UPLOAD ──
 const CLOUDINARY_CLOUD = 'dxulymbhw';
 const CLOUDINARY_PRESET = 'fitlist_uploads';
@@ -846,6 +865,14 @@ function removeGalleryItem(index, url) {
   showToast('Foto removida. Clica em Guardar para confirmar.');
 }
 
+// ── PREVIEW FOTO PERFIL ──
+function previewFotoPerfil(input) {
+  if (!input.files.length) return;
+  const url = URL.createObjectURL(input.files[0]);
+  const container = document.getElementById('foto-preview-container');
+  container.innerHTML = `<img id="foto-preview-img" src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
+}
+
 // ── PREVIEW GALERIA ──
 function previewGallery(input) {
   const preview = document.getElementById('gallery-preview');
@@ -855,7 +882,7 @@ function previewGallery(input) {
     const isVideo = file.type.startsWith('video');
     return `<div class="upload-preview-item">
       ${isVideo
-        ? `<video src="${url}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
+        ? `<video src="${url}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;" onloadeddata="this.currentTime=1"></video>`
         : `<img src="${url}">`
       }
     </div>`;
@@ -898,9 +925,21 @@ async function loadEditPage(token) {
       <div class="edit-form">
 
         <label>Foto de perfil</label>
-        ${fotoActual ? `<img src="${fotoActual}" style="width:100px;height:100px;object-fit:cover;border-radius:12px;margin-bottom:0.75rem;display:block;">` : '<p style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Sem foto ainda</p>'}
-        <input type="file" id="ef-foto" accept="image/*" style="color:var(--muted);font-size:0.82rem;">
-        <p style="font-size:0.7rem;color:var(--muted);margin-top:0.35rem;">Formatos aceites: JPG, PNG. Máximo 5MB.</p>
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+          <div id="foto-preview-container" style="width:80px;height:80px;border-radius:12px;overflow:hidden;background:var(--mid2);flex-shrink:0;cursor:pointer;" onclick="document.getElementById('ef-foto').click()">
+            ${(f['Foto Perfil'] || fotoActual)
+              ? `<img id="foto-preview-img" src="${f['Foto Perfil'] || fotoActual}" style="width:100%;height:100%;object-fit:cover;">`
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>`
+            }
+          </div>
+          <div>
+            <button type="button" onclick="document.getElementById('ef-foto').click()" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">
+              ${(f['Foto Perfil'] || fotoActual) ? '📷 Alterar foto' : '📷 Adicionar foto'}
+            </button>
+            <p style="font-size:0.68rem;color:var(--muted);margin-top:0.35rem;">JPG ou PNG. Máximo 5MB.</p>
+          </div>
+        </div>
+        <input type="file" id="ef-foto" accept="image/*" style="display:none;" onchange="previewFotoPerfil(this)">
 
         <label>Nome completo</label>
         <input type="text" id="ef-nome" value="${f['Nome'] || ''}">
@@ -953,7 +992,10 @@ async function loadEditPage(token) {
               ${galeriaCloudinaryEdit.map((item, i) => {
                 const isVideo = item.type && item.type.startsWith('video');
                 return `<div class="upload-preview-item" id="gallery-item-${i}">
-                  ${isVideo ? `<video src="${item.url}" muted></video>` : `<img src="${item.thumbnails?.small?.url || item.url}">`}
+                  ${isVideo
+                    ? `<video src="${item.url}" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;" onloadeddata="this.currentTime=1"></video>`
+                    : `<img src="${item.thumbnails?.small?.url || item.url}">`
+                  }
                   <button class="remove-btn" onclick="removeGalleryItem(${i}, '${item.url}')">✕</button>
                 </div>`;
               }).join('')}
@@ -991,7 +1033,8 @@ async function saveEditProfile(recordId) {
   if (fotoInput && fotoInput.files.length > 0) {
     btn.textContent = 'A carregar foto de perfil... 0%';
     try {
-      fotoPerfil = await uploadToCloudinary(fotoInput.files[0], pct => {
+      const compressed = await compressImage(fotoInput.files[0]);
+      fotoPerfil = await uploadToCloudinary(compressed, pct => {
         btn.textContent = `A carregar foto de perfil... ${pct}%`;
       });
     } catch(e) {
@@ -1010,7 +1053,8 @@ async function saveEditProfile(recordId) {
     try {
       let uploaded = 0;
       galeriaUrls = await Promise.all(galeriaFiles.map(async (f, i) => {
-        const url = await uploadToCloudinary(f, pct => {
+        const compressed = await compressImage(f);
+        const url = await uploadToCloudinary(compressed, pct => {
           btn.textContent = `A carregar ficheiro ${i+1}/${galeriaFiles.length}... ${pct}%`;
         });
         uploaded++;
