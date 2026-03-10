@@ -141,12 +141,13 @@ nav {
 .svc-name { font-weight:500; font-size:0.9rem; margin-bottom:0.25rem; }
 .svc-desc { font-size:0.73rem; color:var(--muted); margin-bottom:0.8rem; line-height:1.5; }
 .svc-price { font-family:'Syne',sans-serif; font-size:1.05rem; font-weight:800; color:var(--orange); }
-.wa-cta { position:sticky; bottom:1.5rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:1.1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; margin-top:3rem; gap:1rem; flex-wrap:wrap; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
-.wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.4rem; font-weight:800; }
-.wa-cta-left .price-sub { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
-.wa-btn { display:inline-flex; align-items:center; gap:0.6rem; background:#25D366; color:#000; border:none; padding:0.9rem 1.75rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.88rem; cursor:pointer; transition:all 0.2s; text-decoration:none; }
+.wa-cta { position:sticky; bottom:1rem; background:rgba(26,24,24,0.97); backdrop-filter:blur(16px); border:1px solid rgba(232,80,10,0.2); border-radius:16px; padding:0.85rem 1.25rem; display:flex; justify-content:space-between; align-items:center; margin-top:2rem; gap:0.75rem; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+.wa-cta-left .price-big { font-family:'Syne',sans-serif; font-size:1.2rem; font-weight:800; }
+.wa-cta-left .price-sub { font-size:0.7rem; color:var(--muted); margin-top:0.1rem; }
+.wa-btn { display:inline-flex; align-items:center; gap:0.5rem; background:#25D366; color:#000; border:none; padding:0.75rem 1.25rem; border-radius:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:0.82rem; cursor:pointer; transition:all 0.2s; text-decoration:none; white-space:nowrap; }
 .wa-btn:hover { background:#20c05c; transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,211,102,0.25); }
-.wa-btn svg { width:18px; height:18px; }
+.wa-btn svg { width:16px; height:16px; }
+@media(max-width:480px) { .wa-cta { padding:0.75rem 1rem; } .wa-cta-left .price-big { font-size:1rem; } .wa-btn { padding:0.65rem 1rem; font-size:0.78rem; } }
 
 /* REGISTER - Airtable Form Embed */
 #register-page { padding:7rem 3rem 5rem; min-height:100vh; }
@@ -604,7 +605,7 @@ function renderTrainers(filterCat) {
     const badge   = f['Verificado']
       ? '<div class="card-badge badge-verified">✓ Verificado</div>'
       : '';
-    const foto    = f['Foto']?.[0]?.url;
+    const foto    = f['Foto Perfil'] || f['Foto']?.[0]?.url;
     const imgHTML = foto
       ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" alt="${f['Nome']}">`
       : emoji;
@@ -642,9 +643,9 @@ function openProfile(index) {
   const cls    = CAT[f['Especialidade']] || 'pt';
   const stars  = toStars(f['Avaliação']);
   const price  = toPrice(f['Preço por Sessão']);
-  const foto   = f['Foto']?.[0]?.url;
-  const avatar = foto
-    ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${f['Nome']}">`
+  const fotoUrl = f['Foto Perfil'] || f['Foto']?.[0]?.url;
+  const avatar = fotoUrl
+    ? `<img src="${fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:18px;" alt="${f['Nome']}">`
     : emoji;
 
   document.getElementById('profile-top').innerHTML = `
@@ -814,6 +815,17 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 3200);
 }
 
+// ── REMOVER ITEM DA GALERIA ──
+function removeGalleryItem(index, url) {
+  const existing = document.getElementById('ef-galeria-existing');
+  if (!existing) return;
+  const urls = existing.value.split(',').filter(u => u && u !== url);
+  existing.value = urls.join(',');
+  const item = document.getElementById(`gallery-item-${index}`);
+  if (item) item.remove();
+  showToast('Foto removida. Clica em Guardar para confirmar.');
+}
+
 // ── PREVIEW GALERIA ──
 function previewGallery(input) {
   const preview = document.getElementById('gallery-preview');
@@ -913,16 +925,18 @@ async function loadEditPage(token) {
           <label style="margin-bottom:0.5rem;">📸 Galeria de Fotos & Vídeos</label>
           <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Adiciona fotos e vídeos do teu trabalho. Máximo 9 ficheiros. JPG, PNG, MP4.</p>
           ${galeria.length > 0 ? `
+            <input type="hidden" id="ef-galeria-existing" value="${galeriaCloudinaryEdit.map(i => i.url).join(',')}">
             <div class="upload-preview" id="current-gallery">
-              ${galeria.map((item, i) => {
+              ${galeriaCloudinaryEdit.map((item, i) => {
                 const isVideo = item.type && item.type.startsWith('video');
-                return `<div class="upload-preview-item">
+                return `<div class="upload-preview-item" id="gallery-item-${i}">
                   ${isVideo ? `<video src="${item.url}" muted></video>` : `<img src="${item.thumbnails?.small?.url || item.url}">`}
+                  <button class="remove-btn" onclick="removeGalleryItem(${i}, '${item.url}')">✕</button>
                 </div>`;
               }).join('')}
             </div>
-            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Galeria actual — para remover fotos contacta o FitList.</p>
-          ` : ''}
+            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Clica no ✕ para remover uma foto/vídeo.</p>
+          ` : '<input type="hidden" id="ef-galeria-existing" value="">'}
           <div class="upload-area" onclick="document.getElementById('ef-galeria').click()">
             📁 Clica para adicionar fotos ou vídeos
           </div>
@@ -947,6 +961,21 @@ async function saveEditProfile(recordId) {
 
   const precoRaw = document.getElementById('ef-preco').value;
   const preco = isNaN(Number(precoRaw)) || precoRaw === '' ? precoRaw : Number(precoRaw);
+
+  // Upload foto de perfil para Cloudinary
+  const fotoInput = document.getElementById('ef-foto');
+  let fotoPerfil = null;
+  if (fotoInput && fotoInput.files.length > 0) {
+    btn.textContent = 'A carregar foto de perfil...';
+    try {
+      fotoPerfil = await uploadToCloudinary(fotoInput.files[0]);
+    } catch(e) {
+      showToast('Erro ao carregar foto de perfil. Tenta novamente.');
+      btn.disabled = false;
+      btn.textContent = '💾 Guardar alterações';
+      return;
+    }
+  }
 
   // Upload de galeria para Cloudinary
   const galeriaInput = document.getElementById('ef-galeria');
@@ -983,9 +1012,14 @@ async function saveEditProfile(recordId) {
     'Bio': document.getElementById('ef-bio').value,
   };
 
+  if (fotoPerfil) fields['Foto Perfil'] = fotoPerfil;
+
   // Adiciona URLs da galeria se houver novos uploads
   if (galeriaUrls.length > 0) {
-    fields['Galeria Cloudinary'] = galeriaUrls.join(',');
+    // Acumula com as URLs existentes
+    const existingUrls = document.getElementById('ef-galeria-existing')?.value || '';
+    const allUrls = [existingUrls, ...galeriaUrls].filter(Boolean).join(',');
+    fields['Galeria Cloudinary'] = allUrls;
   }
 
   // Remove campos nulos
