@@ -279,7 +279,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
 @media(max-width:768px){
   nav { padding:1rem 1.25rem; }
   .nav-link:not(.btn-orange){ display:none; }
-  .btn-orange { display:none; }
+  .btn-orange { display:inline-flex; }
   .hamburger { display:flex !important; flex-direction:column; gap:5px; cursor:pointer; padding:0.5rem; }
   .hamburger span { width:22px; height:2px; background:var(--white); border-radius:2px; transition:all 0.2s; }
   .mobile-menu { display:none; position:fixed; inset:0; background:var(--dark); z-index:999; flex-direction:column; align-items:center; justify-content:center; gap:2rem; }
@@ -308,7 +308,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <button class="nav-link" onclick="showPage('parceiros')">Parceiros</button>
     <button class="nav-link" onclick="showPage('about')">Sobre</button>
     <button class="btn-orange" onclick="showPage('register')">Sou Treinador</button>
-    <div class="hamburger" onclick="document.getElementById('mobile-menu').classList.toggle('open')" style="display:none;">
+    <div class="hamburger" onclick="document.getElementById('mobile-menu').classList.toggle('open')">
       <span></span><span></span><span></span>
     </div>
   </div>
@@ -453,7 +453,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2>És treinador?<br>Junta-te ao <span>FitList</span></h2>
     <p>Coloca o teu perfil em frente de centenas de clientes em Luanda. Grátis nos primeiros 3 meses.</p>
     <button class="btn-orange" onclick="showPage('register')">Criar Perfil Gratuito</button>
-    <button class="btn-outline" onclick="showPage('about')">Saber mais</button>
+    <button class="btn-outline" onclick="showPage('about')">Sobre o FitList</button>
   </section>
 </div>
 
@@ -533,13 +533,31 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <label>Especialidade *</label>
         <select id="reg-especialidade">
           <option value="">Selecciona a tua especialidade</option>
-          ${['Personal Trainer','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira','Outra'].map(e => `<option>${e}</option>`).join('')}
+          <option>Personal Trainer</option>
+          <option>Boxe</option>
+          <option>Judo</option>
+          <option>MMA</option>
+          <option>Muay Thai</option>
+          <option>Crossfit</option>
+          <option>Yoga / Pilates</option>
+          <option>Karaté</option>
+          <option>Capoeira</option>
+          <option>Outra</option>
         </select>
 
         <label>Zona em Luanda *</label>
         <select id="reg-zona">
           <option value="">Selecciona a tua zona</option>
-          ${['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga'].map(z => `<option>${z}</option>`).join('')}
+          <option>Talatona</option>
+          <option>Miramar</option>
+          <option>Alvalade</option>
+          <option>Viana</option>
+          <option>Benfica</option>
+          <option>Rangel</option>
+          <option>Luanda Sul</option>
+          <option>Cacuaco</option>
+          <option>Mutamba</option>
+          <option>Maianga</option>
         </select>
 
         <label>Preço por sessão (Kz)</label>
