@@ -41,7 +41,9 @@ nav {
 @keyframes pageIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
 /* HERO */
-.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:9rem 3rem 5rem; position:relative; overflow:hidden; }
+.hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:9rem 3rem 5rem; position:relative; overflow:hidden; background-image:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=80&auto=format&fit=crop'); background-size:cover; background-position:center; }
+.hero::before { content:''; position:absolute; inset:0; background:linear-gradient(to bottom, rgba(10,9,9,0.75) 0%, rgba(10,9,9,0.6) 50%, rgba(10,9,9,0.9) 100%); z-index:0; }
+.hero > * { position:relative; z-index:1; }
 .hero-glow { position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse 70% 60% at 75% 25%, rgba(232,80,10,0.16) 0%, transparent 55%), radial-gradient(ellipse 50% 40% at 15% 85%, rgba(201,185,154,0.07) 0%, transparent 50%); }
 .hero-eyebrow { display:inline-flex; align-items:center; gap:0.6rem; background:rgba(232,80,10,0.1); border:1px solid rgba(232,80,10,0.25); border-radius:100px; padding:0.4rem 1rem; width:fit-content; font-size:0.7rem; letter-spacing:0.15em; color:var(--orange); text-transform:uppercase; margin-bottom:2rem; animation:fadeUp 0.5s ease both; }
 .hero-eyebrow::before { content:'●'; font-size:0.45rem; }
@@ -330,23 +332,23 @@ footer p { font-size:0.72rem; color:var(--muted); }
     </div>
     <div class="cat-row">
       <div class="cat-pill active" onclick="goFilter('all')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
         Todos
       </div>
       <div class="cat-pill" onclick="goFilter('pt')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/><circle cx="6" cy="4" r="1"/><circle cx="18" cy="4" r="1"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11M12 3v18M4 12h4M16 12h4"/></svg>
         Personal Trainer
       </div>
       <div class="cat-pill" onclick="goFilter('am')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6l3-3 11.5 11.5M14.5 17.5l2 2a2.12 2.12 0 003-3l-2-2M10.5 3.5l3 3M13 7l-3 3M3 13l3 3"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6l3-3 11.5 11.5-3 3zM13 7l4 4M3 11l4 4M16 16l4-4"/></svg>
         Artes Marciais
       </div>
       <div class="cat-pill" onclick="goFilter('crossfit')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.53.4-2.973 1.1-4.2A5.5 5.5 0 008.5 14.5z"/></svg>
         Crossfit
       </div>
       <div class="cat-pill" onclick="goFilter('yoga')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5v2a5 5 0 01-10 0V7a5 5 0 015-5zM4 22c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         Yoga
       </div>
     </div>
@@ -404,19 +406,19 @@ footer p { font-size:0.72rem; color:var(--muted); }
   <div class="filter-row">
     <button class="filter-btn active" onclick="setFilter(this,'all')">Todos</button>
     <button class="filter-btn" onclick="setFilter(this,'pt')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5h11M12 3v18M4 12h4M16 12h4"/></svg>
       Personal Trainer
     </button>
     <button class="filter-btn" onclick="setFilter(this,'am')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6l3-3 11.5 11.5M14.5 17.5l2 2a2.12 2.12 0 003-3l-2-2M10.5 3.5l3 3M13 7l-3 3M3 13l3 3"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6l3-3 11.5 11.5-3 3zM13 7l4 4M3 11l4 4M16 16l4-4"/></svg>
       Artes Marciais
     </button>
     <button class="filter-btn" onclick="setFilter(this,'crossfit')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.53.4-2.973 1.1-4.2A5.5 5.5 0 008.5 14.5z"/></svg>
       Crossfit
     </button>
     <button class="filter-btn" onclick="setFilter(this,'yoga')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 015 5v2a5 5 0 01-10 0V7a5 5 0 015-5zM4 22c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
       Yoga
     </button>
     <select id="zona-filter" onchange="setZonaFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
@@ -601,15 +603,15 @@ const PUBLIC_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
 // ── MAPAS DE EMOJI E CATEGORIA ──
 // Dicionários: associam o nome da especialidade ao emoji e categoria
 const EMOJI = {
-  'Personal Trainer': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12"/><circle cx="6" cy="4" r="1.5"/><circle cx="18" cy="4" r="1.5"/></svg>',
+  'Personal Trainer': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6.5 6.5h11M12 3v18M4 12h4M16 12h4M5 7l2 2M17 7l-2 2M5 17l2-2M17 17l-2-2"/></svg>',
   'Boxe': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 11V6a2 2 0 00-2-2v0a2 2 0 00-2 2v0M14 10V4a2 2 0 00-2-2v0a2 2 0 00-2 2v2M10 10.5V6a2 2 0 00-2-2v0a2 2 0 00-2 2v8a6 6 0 006 6h0a6 6 0 006-6v-2a2 2 0 00-2-2h-4z"/></svg>',
-  'Judo': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2"/><path d="M12 7v6l-3 4M12 13l3 4M8 10h8"/></svg>',
-  'MMA': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 17.5L3 6l3-3 11.5 11.5M14.5 17.5l2 2a2.12 2.12 0 003-3l-2-2M10.5 3.5l3 3M13 7l-3 3M3 13l3 3"/></svg>',
+  'Judo': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M9 20l3-8 3 8M7 10c0 0 2-2 5-2s5 2 5 2"/></svg>',
+  'MMA': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 11V6a2 2 0 00-2-2v0a2 2 0 00-2 2v0M14 10V4a2 2 0 00-2-2v0a2 2 0 00-2 2v2M10 10.5V6a2 2 0 00-2-2v0a2 2 0 00-2 2v8a6 6 0 006 6h0a6 6 0 006-6v-2a2 2 0 00-2-2h-4z"/></svg>',
   'Muay Thai': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 11V6a2 2 0 00-2-2v0a2 2 0 00-2 2v0M14 10V4a2 2 0 00-2-2v0a2 2 0 00-2 2v2M10 10.5V6a2 2 0 00-2-2v0a2 2 0 00-2 2v8a6 6 0 006 6h0a6 6 0 006-6v-2a2 2 0 00-2-2h-4z"/></svg>',
   'Crossfit': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
-  'Yoga / Pilates': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2"/><path d="M5 22c0-3.87 3.13-7 7-7s7 3.13 7 7M12 7v4M9 10l3 1 3-1"/></svg>',
+  'Yoga / Pilates': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M12 6c0 0-5 3-5 8h10c0-5-5-8-5-8zM7 20c1-2 2.5-3 5-3s4 1 5 3"/></svg>',
   'Karaté': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.5 17.5L3 6l3-3 11.5 11.5M14.5 17.5l2 2a2.12 2.12 0 003-3l-2-2"/></svg>',
-  'Capoeira': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="5" r="2"/><path d="M12 7c-4 3-4 8 0 10M12 7c4 3 4 8 0 10M7 17l5-5 5 5"/></svg>',
+  'Capoeira': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M12 6l-4 6 4 2 4-2-4-6zM8 12l-3 8M16 12l3 8"/></svg>',
   'Outra': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>'
 };
 const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am','Outra':'pt' };
