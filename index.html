@@ -229,6 +229,11 @@ nav {
 .parceiros-submit:hover { background: var(--orange-light); transform: translateY(-2px); }
 @media(max-width:768px) { .parceiros-grid { grid-template-columns: 1fr; } .parceiros-form { grid-template-columns: 1fr; } .parceiros-hero h2 { font-size: 2rem; } }
 
+.featured-section { padding:5rem 3rem; max-width:1200px; margin:0 auto; }
+.featured-section .trainers-grid { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:900px) { .featured-section .trainers-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width:500px) { .featured-section .trainers-grid { grid-template-columns: 1fr; } }
+
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; background:var(--dark); }
 .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
@@ -395,6 +400,18 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <button class="btn-orange" onclick="showPage('register')">Criar Perfil Gratuito</button>
     <button class="btn-outline" onclick="showPage('about')">Saber mais</button>
   </section>
+
+  <section class="featured-section">
+    <div class="section-label">Os melhores</div>
+    <h2 class="section-title">Profissionais em <span style="color:var(--orange)">Destaque</span></h2>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2.5rem;">Os mais procurados em Luanda pela nossa comunidade.</p>
+    <div class="trainers-grid" id="featured-grid">
+      <div class="loading"><div class="loading-spinner"></div>A carregar...</div>
+    </div>
+    <div style="text-align:center;margin-top:2.5rem;">
+      <button class="btn-outline" onclick="showPage('listings')" style="padding:0.9rem 2.5rem;font-size:0.95rem;">Ver todos os profissionais →</button>
+    </div>
+  </section>
 </div>
 
 <!-- LISTINGS -->
@@ -406,23 +423,20 @@ footer p { font-size:0.72rem; color:var(--muted); }
     </div>
   </div>
   <div class="filter-row">
-    <button class="filter-btn active" onclick="setFilter(this,'all')">Todos</button>
-    <button class="filter-btn" onclick="setFilter(this,'pt')">
-      <i data-lucide="dumbbell" style="width:14px;height:14px;"></i>
-      Personal Trainer
-    </button>
-    <button class="filter-btn" onclick="setFilter(this,'am')">
-      <i data-lucide="shield" style="width:14px;height:14px;"></i>
-      Artes Marciais
-    </button>
-    <button class="filter-btn" onclick="setFilter(this,'crossfit')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 01-7 7 7 7 0 01-7-7c0-1.53.4-2.973 1.1-4.2A5.5 5.5 0 008.5 14.5z"/></svg>
-      Crossfit
-    </button>
-    <button class="filter-btn" onclick="setFilter(this,'yoga')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-      Yoga
-    </button>
+    <select id="cat-filter" onchange="setCatFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
+      <option value="">Todas as categorias</option>
+      <option value="pt">Personal Trainer</option>
+      <option value="am">Artes Marciais (todas)</option>
+      <option value="Boxe">— Boxe</option>
+      <option value="Judo">— Judo</option>
+      <option value="Muay Thai">— Muay Thai</option>
+      <option value="MMA">— MMA</option>
+      <option value="Karaté">— Karaté</option>
+      <option value="Capoeira">— Capoeira</option>
+      <option value="crossfit">Crossfit</option>
+      <option value="yoga">Yoga / Pilates</option>
+      <option value="Outra">Outra</option>
+    </select>
     <select id="zona-filter" onchange="setZonaFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
       <option value="">📍 Todas as zonas</option>
       <option value="Talatona">Talatona</option>
@@ -682,6 +696,47 @@ function goFilter(cat) {
   showPage('listings');
 }
 
+// ── CARREGAR DESTAQUES NA HOME ──
+async function loadFeatured() {
+  const grid = document.getElementById('featured-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch('/airtable?action=list');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const featured = (data.records || []).slice(0, 4);
+    if (featured.length === 0) { grid.innerHTML = ''; return; }
+    // Temporariamente adiciona ao allTrainers se ainda não carregou
+    if (allTrainers.length === 0) allTrainers = data.records || [];
+    grid.innerHTML = featured.map((record) => {
+      const f = record.fields;
+      const globalIndex = allTrainers.findIndex(r => r.id === record.id);
+      const emoji = EMOJI[f['Especialidade']] || '<i data-lucide="dumbbell" style="width:32px;height:32px;"></i>';
+      const cls = CAT[f['Especialidade']] || 'pt';
+      const price = toPrice(f['Preço por Sessão']);
+      const badge = f['Verificado'] ? '<div class="card-badge badge-verified">✓ Verificado</div>' : '';
+      const foto = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : f['Foto']?.[0]?.url;
+      const imgHTML = foto ? `<img src="${foto}" style="width:100%;height:100%;object-fit:cover;" alt="${f['Nome']}">` : emoji;
+      return `
+        <div class="t-card" onclick="openProfile(${globalIndex < 0 ? 0 : globalIndex})">
+          <div class="t-card-img ${cls}">${imgHTML}${badge}</div>
+          <div class="t-card-body">
+            <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
+            <div class="t-card-spec">${f['Especialidade']}</div>
+            <div class="t-card-location"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--orange);flex-shrink:0;"></i> ${f['Zona']}, Luanda</div>
+            <div class="t-card-footer">
+              <div class="t-price">${price} <small>/ sessão</small></div>
+              ${f['Avaliação'] ? `<div class="t-stars">★ <span>(${f['Nº Avaliações'] || 0})</span></div>` : '<div class="t-stars" style="color:var(--muted);font-size:0.72rem;">Novo</div>'}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } catch(e) {
+    if (grid) grid.innerHTML = '';
+  }
+}
+
 // ── CARREGAR TREINADORES DO AIRTABLE ──
 // Esta função vai buscar os dados ao Airtable via fetch (HTTP GET)
 // Usa a Shared View pública — sem necessidade de token
@@ -786,7 +841,7 @@ function renderTrainers(filterCat) {
         <div class="t-card-body">
           <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
           <div class="t-card-spec">${f['Especialidade']}</div>
-          <div class="t-card-location">📍 ${f['Zona']}, Luanda</div>
+          <div class="t-card-location"><i data-lucide="map-pin" style="width:12px;height:12px;color:var(--orange);flex-shrink:0;"></i> ${f['Zona']}, Luanda</div>
           <div class="t-card-tags">
             <span class="tag">${f['Especialidade']}</span>
             ${f['Anos Experiência'] ? `<span class="tag">${f['Anos Experiência']} anos exp.</span>` : ''}
@@ -915,11 +970,23 @@ function openProfile(index) {
 }
 
 // ── FILTROS ──
+function setCatFilter(val) {
+  const catKeys = ['pt','am','crossfit','yoga','outra',''];
+  if (catKeys.includes(val)) {
+    activeFilter = val || 'all';
+    activeEspec = '';
+  } else {
+    activeFilter = 'all';
+    activeEspec = val;
+  }
+  renderTrainers(activeFilter);
+}
+
 function setFilter(btn, cat) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
   activeFilter = cat;
-  activeEspec  = '';
+  activeEspec = '';
+  const sel = document.getElementById('cat-filter');
+  if (sel) sel.value = cat === 'all' ? '' : cat;
   renderTrainers(cat);
 }
 
@@ -1390,12 +1457,11 @@ const urlParams = new URLSearchParams(window.location.search);
 const editToken = urlParams.get('editar');
 
 if (editToken) {
-  // Se tem token, mostra a página de edição directamente
   showPage('edit');
   loadEditPage(editToken);
 } else {
-  // Carrega dados reais — fallback só é usado se falhar
   loadTrainers();
+  loadFeatured();
 }
 
 // Cat pills interactivos
