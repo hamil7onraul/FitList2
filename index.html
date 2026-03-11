@@ -723,7 +723,7 @@ async function loadFeatured() {
           <div class="t-card-body">
             <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
             <div class="t-card-spec">${f['Especialidade']}</div>
-            <div class="t-card-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}, Luanda</div>
+            <div class="t-card-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}, Luanda</div>
             <div class="t-card-footer">
               <div class="t-price">${price} <small>/ sessão</small></div>
               ${f['Avaliação'] ? `<div class="t-stars">★ <span>(${f['Nº Avaliações'] || 0})</span></div>` : '<div class="t-stars" style="color:var(--muted);font-size:0.72rem;">Novo</div>'}
@@ -841,7 +841,7 @@ function renderTrainers(filterCat) {
         <div class="t-card-body">
           <div class="t-card-name">${f['Nome']}${f['Verificado'] ? '<span class="verified-icon">✓</span>' : ''}</div>
           <div class="t-card-spec">${f['Especialidade']}</div>
-          <div class="t-card-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}, Luanda</div>
+          <div class="t-card-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}, Luanda</div>
           <div class="t-card-tags">
             <span class="tag">${f['Especialidade']}</span>
             ${f['Anos Experiência'] ? `<span class="tag">${f['Anos Experiência']} anos exp.</span>` : ''}
