@@ -233,8 +233,8 @@ nav {
 @media(max-width:768px) { .parceiros-grid { grid-template-columns: 1fr; } .parceiros-form { grid-template-columns: 1fr; } .parceiros-hero h2 { font-size: 2rem; } }
 
 .categories-section { padding:5rem 3rem; max-width:1100px; margin:0 auto; text-align:center; }
-.categories-section .section-label { text-align:center; }
-.categories-section .section-title { text-align:center; }
+.categories-section .section-label { text-align:center; display:block; }
+.categories-section .section-title { text-align:center; max-width:100%; margin-left:auto; margin-right:auto; }
 .categories-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:1rem; margin-top:2rem; }
 .cat-card { background:var(--mid); border:1px solid var(--border); border-radius:16px; padding:1.75rem 1rem; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
 .cat-card:hover { border-color:rgba(232,80,10,0.4); background:rgba(232,80,10,0.06); transform:translateY(-3px); }
@@ -400,7 +400,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
       </div>
       <div class="cat-card" onclick="activeEspec='Boxe'; activeFilter='all'; showPage('listings'); renderTrainers('all');">
         <div class="cat-card-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9V7a4 4 0 014-4h4a4 4 0 014 4v2"/><rect x="2" y="9" width="20" height="8" rx="3"/><path d="M6 17v2a1 1 0 001 1h10a1 1 0 001-1v-2"/></svg>
+          <i data-lucide="hand" style="width:26px;height:26px;"></i>
         </div>
         <div class="cat-card-name">Boxe & MMA</div>
       </div>
