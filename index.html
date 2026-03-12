@@ -519,16 +519,22 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2>Junta-te ao<br><span>FitList</span></h2>
     <p class="sub">Os primeiros 3 meses são completamente grátis. Preenche o formulário e entraremos em contacto via WhatsApp em 24h.</p>
 
+    <!-- Barra de progresso -->
+    <div style="margin-bottom:2rem;">
+      <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">
+        <span id="reg-step-label">Passo 1 de 2 — Informação básica</span>
+        <span id="reg-step-pct">50%</span>
+      </div>
+      <div style="background:var(--border);border-radius:100px;height:4px;">
+        <div id="reg-progress-bar" style="background:var(--orange);border-radius:100px;height:4px;width:50%;transition:width 0.3s;"></div>
+      </div>
+    </div>
+
     <div id="register-form-container">
-      <div class="edit-form">
+      <!-- PASSO 1 -->
+      <div id="reg-step-1" class="edit-form">
         <label>Nome completo *</label>
         <input type="text" id="reg-nome" placeholder="Ex: Carlos Mbemba">
-
-        <label>WhatsApp (com indicativo) *</label>
-        <input type="text" id="reg-whatsapp" placeholder="Ex: +244923000000">
-
-        <label>Email</label>
-        <input type="email" id="reg-email" placeholder="Ex: carlos@email.com">
 
         <label>Especialidade *</label>
         <select id="reg-especialidade">
@@ -563,16 +569,42 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <label>Anos de experiência</label>
         <input type="number" id="reg-exp" placeholder="Ex: 5" min="0" max="50">
 
+        <button class="save-btn" onclick="regNextStep()" style="margin-top:1.5rem;">Continuar →</button>
+      </div>
+
+      <!-- PASSO 2 -->
+      <div id="reg-step-2" class="edit-form" style="display:none;">
+        <label>WhatsApp (com indicativo) *</label>
+        <input type="text" id="reg-whatsapp" placeholder="Ex: +244923000000" oninput="validateWhatsapp(this)">
+        <p id="reg-whatsapp-error" style="color:#ff5555;font-size:0.75rem;margin-top:0.25rem;display:none;">Formato inválido. Usa +244 seguido de 9 dígitos.</p>
+
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="Ex: carlos@email.com">
+
         <label>Sobre ti (Bio)</label>
         <textarea id="reg-bio" placeholder="Descreve a tua experiência, certificados, especialidades e o que ofereces aos teus clientes..."></textarea>
 
+        <label>Como nos encontraste?</label>
+        <select id="reg-origem">
+          <option value="">Selecciona uma opção</option>
+          <option>Instagram</option>
+          <option>WhatsApp</option>
+          <option>Recomendação de amigo / colega</option>
+          <option>Ginásio / Academia</option>
+          <option>Google</option>
+          <option>Outro</option>
+        </select>
+
         <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;font-size:0.82rem;color:var(--muted);line-height:1.8;">
           ✅ <strong style="color:var(--white)">Grátis nos primeiros 3 meses</strong><br>
-          📋 Após aprovação recebes um <strong style="color:var(--white)">link pessoal</strong> para gerir o teu perfil — adicionar foto, vídeos e muito mais.<br>
-          ⏱️ Analisamos o teu perfil e entramos em contacto via WhatsApp em menos de 24h.
+          📋 Após aprovação recebes um <strong style="color:var(--white)">link pessoal</strong> para gerir o teu perfil — adicionar fotos, vídeo de apresentação, definir preços e muito mais.<br>
+          ⏱️ Analisaremos o teu perfil e entraremos em contacto via WhatsApp em menos de 24h.
         </div>
 
-        <button class="save-btn" onclick="submitRegister()" style="margin-top:1.5rem;">🚀 Submeter candidatura</button>
+        <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+          <button onclick="regPrevStep()" style="background:var(--mid);border:1px solid var(--border);color:var(--white);border-radius:12px;padding:1rem;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;flex:1;">← Voltar</button>
+          <button class="save-btn" onclick="submitRegister()" style="margin-top:0;flex:2;">🚀 Submeter candidatura</button>
+        </div>
       </div>
     </div>
 
@@ -1209,6 +1241,41 @@ function removeGalleryItem(index, url) {
   showToast('Foto removida. Clica em Guardar para confirmar.');
 }
 
+// ── VALIDAÇÃO WHATSAPP ──
+function validateWhatsapp(input) {
+  const val = input.value.replace(/[\s+\-()]/g, '');
+  const valid = /^\d{7,15}$/.test(val);
+  const err = document.getElementById('reg-whatsapp-error');
+  if (err) err.style.display = val.length > 4 && !valid ? 'block' : 'none';
+  if (err) err.textContent = 'Número inválido. Introduz entre 7 e 15 dígitos.';
+}
+
+// ── NAVEGAÇÃO DO FORMULÁRIO DE REGISTO ──
+function regNextStep() {
+  const nome = document.getElementById('reg-nome').value.trim();
+  const esp = document.getElementById('reg-especialidade').value;
+  const zona = document.getElementById('reg-zona').value;
+  if (!nome || !esp || !zona) {
+    showToast('Preenche os campos obrigatórios (*)');
+    return;
+  }
+  document.getElementById('reg-step-1').style.display = 'none';
+  document.getElementById('reg-step-2').style.display = 'block';
+  document.getElementById('reg-step-label').textContent = 'Passo 2 de 2 — Contacto & Bio';
+  document.getElementById('reg-step-pct').textContent = '100%';
+  document.getElementById('reg-progress-bar').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function regPrevStep() {
+  document.getElementById('reg-step-2').style.display = 'none';
+  document.getElementById('reg-step-1').style.display = 'block';
+  document.getElementById('reg-step-label').textContent = 'Passo 1 de 2 — Informação básica';
+  document.getElementById('reg-step-pct').textContent = '50%';
+  document.getElementById('reg-progress-bar').style.width = '50%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 // ── SUBMETER REGISTO ──
 async function submitRegister() {
   const nome = document.getElementById('reg-nome').value.trim();
@@ -1216,12 +1283,16 @@ async function submitRegister() {
   const especialidade = document.getElementById('reg-especialidade').value;
   const zona = document.getElementById('reg-zona').value;
 
-  if (!nome || !whatsapp || !especialidade || !zona) {
+  if (!nome || !especialidade || !zona) {
     showToast('Preenche os campos obrigatórios (*)');
     return;
   }
+  if (!whatsapp) {
+    showToast('Introduz o teu número de WhatsApp');
+    return;
+  }
 
-  const btn = document.querySelector('#register-form-container .save-btn');
+  const btn = document.querySelector('#reg-step-2 .save-btn');
   btn.disabled = true;
   btn.textContent = 'A enviar...';
 
@@ -1233,6 +1304,7 @@ async function submitRegister() {
     'Zona': zona,
     'Anos Experiência': Number(document.getElementById('reg-exp').value) || null,
     'Bio': document.getElementById('reg-bio').value.trim() || null,
+    'Origem': document.getElementById('reg-origem').value || null,
     'Estado': 'Pendente',
   };
 
