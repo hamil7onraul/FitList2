@@ -399,9 +399,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <div class="cat-card-name">Yoga / Pilates</div>
       </div>
       <div class="cat-card" onclick="activeEspec='Boxe'; activeFilter='all'; showPage('listings'); renderTrainers('all');">
-        <div class="cat-card-icon">
-          <i data-lucide="hand" style="width:26px;height:26px;"></i>
-        </div>
+        <div class="cat-card-icon" style="font-size:1.4rem;">🥊</div>
         <div class="cat-card-name">Boxe & MMA</div>
       </div>
       <div class="cat-card" onclick="showPage('listings')">
@@ -1250,13 +1248,14 @@ async function submitRegister() {
       body: JSON.stringify(fields)
     });
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
     document.getElementById('register-form-container').style.display = 'none';
     document.getElementById('register-success').style.display = 'block';
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '🚀 Submeter candidatura';
-    showToast('Erro ao enviar. Tenta novamente.');
+    showToast('Erro: ' + (e.message || 'Tenta novamente'));
+    console.error('Erro registo:', e);
   }
 }
 
