@@ -560,18 +560,17 @@ footer p { font-size:0.72rem; color:var(--muted); }
           <option>Maianga</option>
         </select>
 
-        <label>Preço por sessão (Kz)</label>
-        <input type="text" id="reg-preco" placeholder="Ex: 15000 ou Sob Consulta">
-
         <label>Anos de experiência</label>
         <input type="number" id="reg-exp" placeholder="Ex: 5" min="0" max="50">
 
         <label>Sobre ti (Bio)</label>
         <textarea id="reg-bio" placeholder="Descreve a tua experiência, certificados, especialidades e o que ofereces aos teus clientes..."></textarea>
 
-        <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.15);border-radius:10px;padding:1rem;margin-top:0.5rem;font-size:0.8rem;color:var(--muted);line-height:1.6;">
+        <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;font-size:0.82rem;color:var(--muted);line-height:1.8;">
           ✅ <strong style="color:var(--white)">Grátis nos primeiros 3 meses</strong><br>
-          Após submissão, analisamos o teu perfil e entramos em contacto via WhatsApp em 24h.
+          📋 Após aprovação recebes um <strong style="color:var(--white)">link pessoal</strong> para gerir o teu perfil — adicionar foto, vídeos, definir preços e muito mais.<br>
+          💬 Podes definir os preços como quiser — valor fixo, "Sob Consulta" ou packs mensais.<br>
+          ⏱️ Analisamos o teu perfil e entramos em contacto via WhatsApp em menos de 24h.
         </div>
 
         <button class="save-btn" onclick="submitRegister()" style="margin-top:1.5rem;">🚀 Submeter candidatura</button>
@@ -818,7 +817,7 @@ async function loadFeatured() {
     grid.innerHTML = featured.map((record) => {
       const f = record.fields;
       const globalIndex = allTrainers.findIndex(r => r.id === record.id);
-      const emoji = EMOJI[f['Especialidade']] || '<i data-lucide="dumbbell" style="width:32px;height:32px;"></i>';
+      const emoji = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
       const cls = CAT[f['Especialidade']] || 'pt';
       const price = toPrice(f['Preço por Sessão']);
       const badge = f['Verificado'] ? '<div class="card-badge badge-verified">✓ Verificado</div>' : '';
@@ -928,7 +927,7 @@ function renderTrainers(filterCat) {
   // join('') une todos os blocos numa só string
   grid.innerHTML = list.map((record, index) => {
     const f       = record.fields;
-    const emoji   = EMOJI[f['Especialidade']] || '🏋️';
+    const emoji   = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
     const cls     = CAT[f['Especialidade']] || 'pt';
     const stars   = toStars(f['Avaliação']);
     const price   = toPrice(f['Preço por Sessão']);
@@ -971,7 +970,7 @@ function openProfile(index) {
   if (!record) return;
   const f = record.fields;
 
-  const emoji  = EMOJI[f['Especialidade']] || '🏋️';
+  const emoji  = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
   const cls    = CAT[f['Especialidade']] || 'pt';
   const stars  = toStars(f['Avaliação']);
   const price  = toPrice(f['Preço por Sessão']);
@@ -1233,7 +1232,6 @@ async function submitRegister() {
     'Email': document.getElementById('reg-email').value.trim() || null,
     'Especialidade': especialidade,
     'Zona': zona,
-    'Preço por Sessão': document.getElementById('reg-preco').value.trim() || null,
     'Anos Experiência': Number(document.getElementById('reg-exp').value) || null,
     'Bio': document.getElementById('reg-bio').value.trim() || null,
     'Estado': 'Pendente',
