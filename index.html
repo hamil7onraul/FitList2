@@ -297,6 +297,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   .search-bar button { padding:1rem; width:100%; }
   footer { padding:1.5rem 1.25rem; }
   .footer-links { display:none; }
+  .footer-links .suggest-cat { display:inline-block; }
 }
 </style>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -725,7 +726,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <a onclick="showPage('parceiros')">Parceiros</a>
     <a onclick="showPage('register')">Sou Treinador</a>
     <a onclick="showPage('about')">Sobre</a>
-    <a href="https://wa.me/351931916420?text=${encodeURIComponent('Olá FitList! Gostava de sugerir uma nova categoria: ')}" target="_blank">💡 Sugerir categoria</a>
+    <a class="suggest-cat" href="https://wa.me/351931916420?text=${encodeURIComponent('Olá FitList! Gostava de sugerir uma nova categoria: ')}" target="_blank">💡 Sugerir categoria</a>
   </div>
   <p>© 2026 FitList · Angola</p>
 </footer>
