@@ -233,6 +233,8 @@ nav {
 @media(max-width:768px) { .parceiros-grid { grid-template-columns: 1fr; } .parceiros-form { grid-template-columns: 1fr; } .parceiros-hero h2 { font-size: 2rem; } }
 
 .categories-section { padding:5rem 3rem; max-width:1100px; margin:0 auto; text-align:center; }
+.categories-section .section-label { text-align:center; }
+.categories-section .section-title { text-align:center; }
 .categories-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:1rem; margin-top:2rem; }
 .cat-card { background:var(--mid); border:1px solid var(--border); border-radius:16px; padding:1.75rem 1rem; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
 .cat-card:hover { border-color:rgba(232,80,10,0.4); background:rgba(232,80,10,0.06); transform:translateY(-3px); }
@@ -396,9 +398,9 @@ footer p { font-size:0.72rem; color:var(--muted); }
         </div>
         <div class="cat-card-name">Yoga / Pilates</div>
       </div>
-      <div class="cat-card" onclick="goFilter('am'); activeEspec='Boxe'; renderTrainers('all')">
+      <div class="cat-card" onclick="activeEspec='Boxe'; activeFilter='all'; showPage('listings'); renderTrainers('all');">
         <div class="cat-card-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 11V6a2 2 0 00-2-2 2 2 0 00-2 2M14 10V4a2 2 0 00-2-2 2 2 0 00-2 2v2M10 10.5V6a2 2 0 00-2-2 2 2 0 00-2 2v8a6 6 0 006 6 6 6 0 006-6v-2a2 2 0 00-2-2h-4z"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9V7a4 4 0 014-4h4a4 4 0 014 4v2"/><rect x="2" y="9" width="20" height="8" rx="3"/><path d="M6 17v2a1 1 0 001 1h10a1 1 0 001-1v-2"/></svg>
         </div>
         <div class="cat-card-name">Boxe & MMA</div>
       </div>
@@ -1433,7 +1435,7 @@ async function loadEditPage(token) {
 
         <label>Especialidade</label>
         <select id="ef-especialidade">
-          ${['Personal Trainer','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira'].map(e =>
+          ${['Personal Trainer','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira','Outra'].map(e =>
             `<option ${f['Especialidade']===e?'selected':''}>${e}</option>`
           ).join('')}
         </select>
