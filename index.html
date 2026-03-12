@@ -1095,16 +1095,36 @@ function openProfile(index) {
       Contactar via WhatsApp
     </a>`;
 
-  // Botão de denúncia discreto
+  // Botão de partilha e denúncia
+  const profileUrl = `${window.location.origin}${window.location.pathname}?perfil=${record.id}`;
   document.getElementById('profile-cta').insertAdjacentHTML('afterend',
-    `<div style="text-align:center;margin-top:1rem;padding-bottom:2rem;">
+    `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:1.25rem;padding-bottom:2rem;">
+      <button onclick="shareProfile('${profileUrl}', '${f['Nome']}')" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--mid);border:1px solid var(--border);color:var(--white);border-radius:10px;padding:0.6rem 1.1rem;font-size:0.8rem;cursor:pointer;font-family:'DM Sans',sans-serif;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Partilhar perfil
+      </button>
       <a href="https://wa.me/351931916420?text=${encodeURIComponent(`Denúncia de conteúdo no perfil: ${f['Nome']} — por favor verifica o conteúdo deste perfil no FitList.`)}" target="_blank" style="font-size:0.7rem;color:var(--muted);text-decoration:none;opacity:0.5;">
-        ⚑ Denunciar conteúdo inapropriado
+        ⚑ Denunciar
       </a>
     </div>`
   );
 
   showPage('profile');
+}
+
+// ── PARTILHAR PERFIL ──
+function shareProfile(url, nome) {
+  if (navigator.share) {
+    navigator.share({
+      title: `${nome} — FitList`,
+      text: `Vê o perfil de ${nome} no FitList Angola`,
+      url: url
+    });
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Link copiado! Partilha com quem precisar. 📋');
+    });
+  }
 }
 
 // ── FILTROS ──
@@ -1681,14 +1701,24 @@ async function saveEditProfile(recordId) {
 }
 
 // ── INICIALIZAÇÃO ──
-// Verifica se o URL tem um token de edição
-// Ex: fitlist-angola.netlify.app/?editar=recXXXXXX
 const urlParams = new URLSearchParams(window.location.search);
 const editToken = urlParams.get('editar');
+const perfilId  = urlParams.get('perfil');
 
 if (editToken) {
   showPage('edit');
   loadEditPage(editToken);
+} else if (perfilId) {
+  // Carrega treinadores e abre o perfil directo
+  loadTrainers().then(() => {
+    const index = allTrainers.findIndex(r => r.id === perfilId);
+    if (index >= 0) {
+      openProfile(index);
+    } else {
+      showPage('listings');
+    }
+  });
+  loadFeatured();
 } else {
   loadTrainers();
   loadFeatured();
