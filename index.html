@@ -333,7 +333,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h1>Encontra o<br><em>profissional ideal</em><br>em Luanda</h1>
     <p class="hero-sub">Personal Trainers, Instrutores de Artes Marciais, Yoga, Crossfit e muito mais — os melhores profissionais de Angola num só lugar.</p>
     <div class="search-bar">
-      <select id="hero-cat"><option value="">Todas categorias</option><option value="Personal Trainer">Personal Trainer</option><option value="am">🥊 Artes Marciais (todas)</option><option value="Boxe">— Boxe</option><option value="Judo">— Judo</option><option value="Muay Thai">— Muay Thai</option><option value="MMA">— MMA</option><option value="Karaté">— Karaté</option><option value="Capoeira">— Capoeira</option><option value="Crossfit">Crossfit</option><option value="Yoga / Pilates">Yoga / Pilates</option><option value="Outra">Outra</option></select>
+      <select id="hero-cat"><option value="">Todas categorias</option><option value="Personal Trainer">Personal Trainer</option><option value="Treino Funcional">Treino Funcional</option><option value="am">🥊 Artes Marciais (todas)</option><option value="Boxe">— Boxe</option><option value="Judo">— Judo</option><option value="Muay Thai">— Muay Thai</option><option value="MMA">— MMA</option><option value="Karaté">— Karaté</option><option value="Capoeira">— Capoeira</option><option value="Crossfit">Crossfit</option><option value="Yoga / Pilates">Yoga / Pilates</option><option value="Outra">Outra</option></select>
       <select style="background:transparent;border:none;outline:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:1.1rem 1.25rem;flex:1;min-width:0;" id="hero-zona">
         <option value="">📍 Todas as zonas</option>
         <option>Talatona</option>
@@ -469,6 +469,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <select id="cat-filter" onchange="setCatFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
       <option value="">Todas as categorias</option>
       <option value="pt">Personal Trainer</option>
+      <option value="Treino Funcional">Treino Funcional</option>
       <option value="am">Artes Marciais (todas)</option>
       <option value="Boxe">— Boxe</option>
       <option value="Judo">— Judo</option>
@@ -479,6 +480,11 @@ footer p { font-size:0.72rem; color:var(--muted); }
       <option value="crossfit">Crossfit</option>
       <option value="yoga">Yoga / Pilates</option>
       <option value="Outra">Outra</option>
+    </select>
+    <select id="genero-filter" onchange="setGeneroFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
+      <option value="">👤 Todos</option>
+      <option value="Masculino">Masculino</option>
+      <option value="Feminino">Feminino</option>
     </select>
     <select id="zona-filter" onchange="setZonaFilter(this.value)" style="background:var(--mid);border:1px solid var(--border);border-radius:8px;padding:0.5rem 1rem;color:var(--muted);font-size:0.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;outline:none;">
       <option value="">📍 Todas as zonas</option>
@@ -540,6 +546,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <select id="reg-especialidade">
           <option value="">Selecciona a tua especialidade</option>
           <option>Personal Trainer</option>
+          <option>Treino Funcional</option>
           <option>Boxe</option>
           <option>Judo</option>
           <option>MMA</option>
@@ -718,6 +725,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <a onclick="showPage('parceiros')">Parceiros</a>
     <a onclick="showPage('register')">Sou Treinador</a>
     <a onclick="showPage('about')">Sobre</a>
+    <a href="https://wa.me/351931916420?text=${encodeURIComponent('Olá FitList! Gostava de sugerir uma nova categoria: ')}" target="_blank">💡 Sugerir categoria</a>
   </div>
   <p>© 2026 FitList · Angola</p>
 </footer>
@@ -766,7 +774,7 @@ const EMOJI = {
   'Capoeira': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="4" r="2"/><path d="M12 6l-4 6 4 2 4-2-4-6zM8 12l-3 8M16 12l3 8"/></svg>',
   'Outra': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>'
 };
-const CAT   = { 'Personal Trainer':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am','Outra':'pt' };
+const CAT   = { 'Personal Trainer':'pt','Treino Funcional':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am','Outra':'pt' };
 
 // ── ESTADO DA APP ──
 // Variáveis globais que guardam os dados durante a sessão
@@ -774,6 +782,7 @@ let allTrainers   = [];
 let activeFilter  = 'all';
 let activeZona    = '';
 let activeEspec   = '';
+let activeGenero  = '';
 
 // ── FUNÇÕES UTILITÁRIAS ──
 // Converte número de avaliação (ex: 4.5) em estrelas (ex: ★★★★☆)
@@ -945,6 +954,10 @@ function renderTrainers(filterCat) {
 
   if (activeZona) {
     list = list.filter(r => r.fields['Zona'] === activeZona);
+  }
+
+  if (activeGenero) {
+    list = list.filter(r => r.fields['Género'] === activeGenero);
   }
 
   if (countEl) countEl.textContent = list.length + ' profissionais disponíveis';
@@ -1150,6 +1163,11 @@ function setFilter(btn, cat) {
 
 function setZonaFilter(zona) {
   activeZona = zona;
+  renderTrainers(activeFilter);
+}
+
+function setGeneroFilter(genero) {
+  activeGenero = genero;
   renderTrainers(activeFilter);
 }
 
@@ -1523,9 +1541,16 @@ async function loadEditPage(token) {
 
         <label>Especialidade</label>
         <select id="ef-especialidade">
-          ${['Personal Trainer','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira','Outra'].map(e =>
+          ${['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira','Outra'].map(e =>
             `<option ${f['Especialidade']===e?'selected':''}>${e}</option>`
           ).join('')}
+        </select>
+
+        <label>Género</label>
+        <select id="ef-genero">
+          <option value="">Prefiro não indicar</option>
+          <option value="Masculino" ${f['Género']==='Masculino'?'selected':''}>Masculino</option>
+          <option value="Feminino" ${f['Género']==='Feminino'?'selected':''}>Feminino</option>
         </select>
 
         <label>Zona em Luanda</label>
@@ -1649,6 +1674,7 @@ async function saveEditProfile(recordId) {
     'Email': document.getElementById('ef-email').value,
     'WhatsApp': document.getElementById('ef-whatsapp').value.trim() || null,
     'Especialidade': document.getElementById('ef-especialidade').value,
+    'Género': document.getElementById('ef-genero').value || null,
     'Zona': document.getElementById('ef-zona').value,
     'Preço por Sessão': preco || null,
     'Preço Pack 1x/Semana': document.getElementById('ef-pack1').value || null,
