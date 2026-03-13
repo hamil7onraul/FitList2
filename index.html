@@ -714,15 +714,15 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <div class="parceiro-tag">Em breve</div>
       </div>
       <div class="parceiro-card">
-        <div class="parceiro-icon">🏃</div>
-        <div class="parceiro-title">Eventos & Corridas</div>
-        <div class="parceiro-desc">Promove o teu evento para milhares de atletas e entusiastas do fitness em Luanda.</div>
-        <div class="parceiro-tag">Em breve</div>
-      </div>
-      <div class="parceiro-card">
         <div class="parceiro-icon">💊</div>
         <div class="parceiro-title">Marcas & Lojas</div>
         <div class="parceiro-desc">Suplementos, roupa desportiva, comida fitness. Chega ao público certo no momento certo.</div>
+        <div class="parceiro-tag">Em breve</div>
+      </div>
+      <div class="parceiro-card">
+        <div class="parceiro-icon">📢</div>
+        <div class="parceiro-title">Publicidade</div>
+        <div class="parceiro-desc">Destaca a tua marca para milhares de entusiastas do fitness em Luanda.</div>
         <div class="parceiro-tag">Em breve</div>
       </div>
     </div>
@@ -864,18 +864,13 @@ footer p { font-size:0.72rem; color:var(--muted); }
 </div>
 
 <!-- MODAL EVENTO -->
-<div id="evento-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;overflow-y:auto;padding:2rem 1rem;" onclick="closeEventoModal(event)">
-  <div id="evento-modal-content" style="background:var(--mid);border:1px solid var(--border);border-radius:20px;max-width:600px;margin:2rem auto;overflow:hidden;" onclick="event.stopPropagation()">
-    <div id="evento-modal-img" style="height:260px;overflow:hidden;position:relative;background:var(--mid2);display:flex;align-items:center;justify-content:center;font-size:4rem;"></div>
-    <div style="padding:2rem;">
-      <div id="evento-modal-tipo" style="display:inline-block;background:var(--orange);color:white;border-radius:6px;padding:0.2rem 0.7rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;margin-bottom:1rem;"></div>
-      <h2 id="evento-modal-nome" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:1rem;"></h2>
-      <div id="evento-modal-meta" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;"></div>
-      <p id="evento-modal-desc" style="color:var(--muted);font-size:0.88rem;line-height:1.7;margin-bottom:1.5rem;"></p>
-      <div style="display:flex;gap:1rem;align-items:center;">
-        <a id="evento-modal-btn" href="#" target="_blank" class="btn-orange" style="display:none;text-decoration:none;padding:0.85rem 1.75rem;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;">Inscrever →</a>
-        <button onclick="closeEventoModal()" style="background:var(--mid2);border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:0.85rem 1.5rem;cursor:pointer;font-size:0.85rem;">Fechar</button>
-      </div>
+<div id="evento-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;" onclick="closeEventoModal(event)">
+  <div style="position:relative;max-width:90vw;max-height:90vh;">
+    <img id="evento-modal-img" src="" alt="" style="max-width:90vw;max-height:85vh;border-radius:16px;object-fit:contain;display:block;">
+    <div id="evento-modal-emoji" style="display:none;font-size:6rem;text-align:center;padding:3rem;"></div>
+    <button onclick="closeEventoModal()" style="position:absolute;top:-1rem;right:-1rem;background:var(--dark);border:1px solid var(--border);color:white;border-radius:50%;width:36px;height:36px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div id="evento-modal-link-container" style="text-align:center;margin-top:1rem;display:none;">
+      <a id="evento-modal-btn" href="#" target="_blank" class="btn-orange" style="text-decoration:none;padding:0.75rem 1.75rem;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;display:inline-block;">Inscrever →</a>
     </div>
   </div>
 </div>
@@ -1537,34 +1532,31 @@ function openEventoModal(record) {
   const imgUrl = f['Imagem URL'] || f['Imagem']?.[0]?.url;
   const tipoEmoji = { 'Corrida':'🏃','Bodybuilding':'💪','Crossfit':'🔥','Yoga':'🧘','Boxe':'🥊','Natação':'🏊','Futebol':'⚽','Outro':'🏅' };
   const emoji = tipoEmoji[f['Tipo']] || '🏅';
-
-  document.getElementById('evento-modal-img').innerHTML = imgUrl
-    ? `<img src="${imgUrl}" alt="${f['Nome']}" style="width:100%;height:100%;object-fit:cover;">`
-    : `<span>${emoji}</span>`;
-
-  document.getElementById('evento-modal-tipo').textContent = f['Tipo'] || '';
-  document.getElementById('evento-modal-tipo').style.display = f['Tipo'] ? 'inline-block' : 'none';
-  document.getElementById('evento-modal-nome').textContent = f['Nome'] || '';
-  document.getElementById('evento-modal-desc').textContent = f['Descrição'] || '';
-
-  const meta = [];
-  if (f['Data']) meta.push(`📅 ${f['Data']}`);
-  if (f['Hora']) meta.push(`🕐 ${f['Hora']}`);
-  if (f['Local']) meta.push(`📍 ${f['Local']}`);
-  if (f['Zona']) meta.push(`🗺️ ${f['Zona']}`);
-  document.getElementById('evento-modal-meta').innerHTML = meta.map(m =>
-    `<span style="font-size:0.82rem;color:var(--muted);background:var(--mid2);padding:0.3rem 0.7rem;border-radius:6px;">${m}</span>`
-  ).join('');
-
+  const modal = document.getElementById('evento-modal');
+  const modalImg = document.getElementById('evento-modal-img');
+  const modalEmoji = document.getElementById('evento-modal-emoji');
+  const linkContainer = document.getElementById('evento-modal-link-container');
   const btn = document.getElementById('evento-modal-btn');
-  if (f['Link Inscrição']) {
-    btn.href = f['Link Inscrição'];
-    btn.style.display = 'inline-block';
+
+  if (imgUrl) {
+    modalImg.src = imgUrl;
+    modalImg.alt = f['Nome'] || '';
+    modalImg.style.display = 'block';
+    modalEmoji.style.display = 'none';
   } else {
-    btn.style.display = 'none';
+    modalImg.style.display = 'none';
+    modalEmoji.textContent = emoji;
+    modalEmoji.style.display = 'block';
   }
 
-  document.getElementById('evento-modal').style.display = 'block';
+  if (f['Link Inscrição']) {
+    btn.href = f['Link Inscrição'];
+    linkContainer.style.display = 'block';
+  } else {
+    linkContainer.style.display = 'none';
+  }
+
+  modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
 
