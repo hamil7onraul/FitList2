@@ -582,21 +582,14 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <label>Nome completo *</label>
         <input type="text" id="reg-nome" placeholder="Ex: Carlos Mbemba">
 
-        <label>Especialidade *</label>
-        <select id="reg-especialidade">
-          <option value="">Selecciona a tua especialidade</option>
-          <option>Personal Trainer</option>
-          <option>Treino Funcional</option>
-          <option>Boxe</option>
-          <option>Judo</option>
-          <option>MMA</option>
-          <option>Muay Thai</option>
-          <option>Crossfit</option>
-          <option>Yoga / Pilates</option>
-          <option>Karaté</option>
-          <option>Capoeira</option>
-          <option>Outra</option>
-        </select>
+        <label>Especialidade * <span style="font-size:0.72rem;color:var(--muted);font-weight:400;">(máx. 5)</span></label>
+        <div id="reg-especialidades" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.25rem;">
+          ${['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Capoeira','Outra'].map(e => `
+            <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;">
+              <input type="checkbox" name="reg-espec" value="${e}" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;">
+              ${e}
+            </label>`).join('')}
+        </div>
 
         <label>Zona em Luanda *</label>
         <select id="reg-zona">
@@ -932,6 +925,14 @@ const EMOJI = {
   'Outra': '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>'
 };
 const CAT   = { 'Personal Trainer':'pt','Treino Funcional':'pt','Boxe':'am','Judo':'am','MMA':'am','Muay Thai':'am','Crossfit':'crossfit','Yoga / Pilates':'yoga','Karaté':'am','Capoeira':'am','Outra':'pt' };
+
+function limitarEspecReg(checkbox) {
+  const checked = document.querySelectorAll('input[name="reg-espec"]:checked');
+  if (checked.length > 5) {
+    checkbox.checked = false;
+    showToast('Máximo de 5 especialidades.');
+  }
+}
 
 // ── LIMITAR ESPECIALIDADES ──
 function limitarEspec(checkbox) {
@@ -1481,9 +1482,9 @@ function validateWhatsapp(input) {
 // ── NAVEGAÇÃO DO FORMULÁRIO DE REGISTO ──
 function regNextStep() {
   const nome = document.getElementById('reg-nome').value.trim();
-  const esp = document.getElementById('reg-especialidade').value;
+  const espChecked = document.querySelectorAll('input[name="reg-espec"]:checked');
   const zona = document.getElementById('reg-zona').value;
-  if (!nome || !esp || !zona) {
+  if (!nome || espChecked.length === 0 || !zona) {
     showToast('Preenche os campos obrigatórios (*)');
     return;
   }
@@ -1508,10 +1509,10 @@ function regPrevStep() {
 async function submitRegister() {
   const nome = document.getElementById('reg-nome').value.trim();
   const whatsapp = document.getElementById('reg-whatsapp').value.trim();
-  const especialidade = document.getElementById('reg-especialidade').value;
+  const especialidade = Array.from(document.querySelectorAll('input[name="reg-espec"]:checked')).map(cb => cb.value);
   const zona = document.getElementById('reg-zona').value;
 
-  if (!nome || !especialidade || !zona) {
+  if (!nome || especialidade.length === 0 || !zona) {
     showToast('Preenche os campos obrigatórios (*)');
     return;
   }
