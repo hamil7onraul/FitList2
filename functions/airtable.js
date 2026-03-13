@@ -2,9 +2,11 @@ const BASE_ID       = 'appCBkBHDMOqS3rbE';
 const TABLE_ID      = 'tblmVytcK7577DUMU';
 const PEDIDOS_ID    = 'tbltJJIUiQc9VFN8z';
 const PARCEIROS_ID  = 'tbliR2rgG2RMFhH3a';
+const EVENTOS_ID    = 'tblylAuVaILrnOl08';
 const BASE_URL      = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
 const PEDIDOS_URL   = `https://api.airtable.com/v0/${BASE_ID}/${PEDIDOS_ID}`;
 const PARCEIROS_URL = `https://api.airtable.com/v0/${BASE_ID}/${PARCEIROS_ID}`;
+const EVENTOS_URL   = `https://api.airtable.com/v0/${BASE_ID}/${EVENTOS_ID}`;
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -89,6 +91,12 @@ export async function onRequest(context) {
         headers,
         body: JSON.stringify({ fields: body })
       });
+      const data = await res.json();
+      return respond(200, data);
+    }
+
+    if (action === 'eventos') {
+      const res  = await fetch(`${EVENTOS_URL}?sort[0][field]=Data&sort[0][direction]=asc`, { headers });
       const data = await res.json();
       return respond(200, data);
     }
