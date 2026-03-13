@@ -288,7 +288,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   .mobile-menu.open { display:flex; }
   .mobile-menu button { background:none; border:none; color:var(--white); font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; cursor:pointer; }
   .mobile-menu .close-btn { position:absolute; top:1.5rem; right:1.5rem; font-size:1.5rem; background:none; border:none; color:var(--white); cursor:pointer; }
-  .hero,#listings-page,#profile-page,#register-page,#about-page,#parceiros-page { padding-left:1.25rem; padding-right:1.25rem; }
+  .hero,#listings-page,#profile-page,#register-page,#about-page,#parceiros-page,#encontrar-page { padding-left:1.25rem; padding-right:1.25rem; }
   .hero h1 { font-size:2.8rem; }
   .profile-top { grid-template-columns:1fr; }
   .hero-stats { gap:1.75rem; }
@@ -455,6 +455,13 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <p>Coloca o teu perfil em frente de centenas de clientes em Luanda. Grátis nos primeiros 3 meses.</p>
     <button class="btn-orange" onclick="showPage('register')">Criar Perfil Gratuito</button>
     <button class="btn-outline" onclick="showPage('about')">Sobre o FitList</button>
+  </section>
+
+  <section style="padding:5rem 3rem;text-align:center;background:rgba(232,80,10,0.04);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section-label">Personalizado para ti</div>
+    <h2 class="section-title" style="max-width:100%;margin:0 auto 1rem;">Não sabes por onde começar?</h2>
+    <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.7;">Diz-nos o teu objectivo e encontramos o treinador perfeito para ti.</p>
+    <button class="btn-orange" onclick="showPage('encontrar')" style="font-size:1rem;padding:1rem 2.5rem;">🎯 Encontrar o meu treinador ideal</button>
   </section>
 </div>
 
@@ -716,6 +723,89 @@ footer p { font-size:0.72rem; color:var(--muted); }
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ENCONTRAR TREINADOR -->
+<div id="encontrar-page" class="page">
+  <div class="register-inner">
+    <button class="back-btn" onclick="showPage('home')">← Voltar</button>
+    <h2>Encontra o teu<br><span>treinador ideal</span></h2>
+    <p class="sub">Responde a algumas perguntas e nós tratamos do resto. Vamos encontrar o profissional certo para os teus objectivos.</p>
+
+    <div id="encontrar-form-container">
+      <div class="edit-form">
+        <label>Qual é o teu objectivo? *</label>
+        <select id="enc-objetivo">
+          <option value="">Selecciona o teu objectivo</option>
+          <option>Perder peso</option>
+          <option>Ganhar massa muscular</option>
+          <option>Condicionamento físico</option>
+          <option>Preparação desportiva</option>
+          <option>Recuperação física</option>
+          <option>Aprender artes marciais</option>
+          <option>Reduzir stress / bem-estar</option>
+          <option>Outro</option>
+        </select>
+
+        <label>Onde preferes treinar? *</label>
+        <select id="enc-zona">
+          <option value="">Selecciona a zona</option>
+          <option>Talatona</option>
+          <option>Miramar</option>
+          <option>Alvalade</option>
+          <option>Viana</option>
+          <option>Benfica</option>
+          <option>Rangel</option>
+          <option>Luanda Sul</option>
+          <option>Cacuaco</option>
+          <option>Mutamba</option>
+          <option>Maianga</option>
+        </select>
+
+        <label>Quantas vezes por semana?</label>
+        <select id="enc-frequencia">
+          <option value="">Selecciona a frequência</option>
+          <option>1-2 vezes</option>
+          <option>3-4 vezes</option>
+          <option>5 ou mais vezes</option>
+        </select>
+
+        <label>Preferes treino?</label>
+        <select id="enc-modalidade">
+          <option value="">Selecciona a modalidade</option>
+          <option>Presencial</option>
+          <option>Online</option>
+          <option>Ambos</option>
+        </select>
+
+        <label>Preferes treinador?</label>
+        <select id="enc-genero">
+          <option value="">Tanto faz</option>
+          <option>Masculino</option>
+          <option>Feminino</option>
+        </select>
+
+        <label>O teu nome *</label>
+        <input type="text" id="enc-nome" placeholder="Ex: João Silva">
+
+        <label>O teu WhatsApp *</label>
+        <input type="text" id="enc-whatsapp" placeholder="Ex: +244923000000">
+
+        <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;font-size:0.82rem;color:var(--muted);line-height:1.8;">
+          🎯 Após submissão, um <strong style="color:var(--white)">treinador compatível</strong> com o teu perfil entrará em contacto via WhatsApp em menos de 24h.
+        </div>
+
+        <button class="save-btn" onclick="submitEncontrar()" style="margin-top:1.5rem;">🎯 Encontrar o meu treinador</button>
+      </div>
+    </div>
+
+    <div id="encontrar-success" style="display:none;text-align:center;padding:3rem 1rem;">
+      <div style="font-size:4rem;margin-bottom:1rem;">🎯</div>
+      <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;margin-bottom:0.75rem;">Pedido recebido!</h3>
+      <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">Recebemos o teu pedido. Um treinador compatível com o teu perfil entrará em contacto via WhatsApp em menos de 24 horas.<br><br>Boa sorte no teu percurso fitness! 💪</p>
+      <button class="btn-orange" onclick="showPage('home')" style="margin-top:2rem;">Voltar ao início</button>
+    </div>
   </div>
 </div>
 
@@ -1367,8 +1457,50 @@ async function submitRegister() {
   }
 }
 
+// ── SUBMETER PEDIDO DE TREINADOR ──
+async function submitEncontrar() {
+  const nome = document.getElementById('enc-nome').value.trim();
+  const whatsapp = document.getElementById('enc-whatsapp').value.trim();
+  const objetivo = document.getElementById('enc-objetivo').value;
+  const zona = document.getElementById('enc-zona').value;
+
+  if (!nome || !whatsapp || !objetivo || !zona) {
+    showToast('Preenche os campos obrigatórios (*)');
+    return;
+  }
+
+  const btn = document.querySelector('#encontrar-form-container .save-btn');
+  btn.disabled = true;
+  btn.textContent = 'A enviar...';
+
+  try {
+    const res = await fetch('/airtable?action=pedido', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        'Nome': nome,
+        'WhatsApp': whatsapp,
+        'Objetivo': objetivo,
+        'Zona': zona,
+        'Frequência': document.getElementById('enc-frequencia').value || null,
+        'Modalidade': document.getElementById('enc-modalidade').value || null,
+        'Preferência Género': document.getElementById('enc-genero').value || null,
+        'Estado': 'Novo',
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    document.getElementById('encontrar-form-container').style.display = 'none';
+    document.getElementById('encontrar-success').style.display = 'block';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🎯 Encontrar o meu treinador';
+    showToast('Erro: ' + (e.message || 'Tenta novamente'));
+  }
+}
+
 // ── PARCEIROS ──
-function submitParceiro() {
+async function submitParceiro() {
   const nome = document.getElementById('p-nome').value.trim();
   const contacto = document.getElementById('p-contacto').value.trim();
   const tipo = document.getElementById('p-tipo').value;
@@ -1380,11 +1512,31 @@ function submitParceiro() {
     return;
   }
 
-  const texto = `🤝 *Novo Pedido de Parceria FitList*\n\n*Empresa:* ${nome}\n*Tipo:* ${tipo}\n*Contacto:* ${contacto}${zona ? `\n*Zona:* ${zona}` : ''}${msg ? `\n*Mensagem:* ${msg}` : ''}`;
-  window.open(`https://wa.me/351931916420?text=${encodeURIComponent(texto)}`, '_blank');
+  const btn = document.querySelector('.parceiros-submit');
+  btn.disabled = true;
+  btn.textContent = 'A enviar...';
 
-  document.getElementById('parceiros-form').style.display = 'none';
-  document.getElementById('parceiros-success').style.display = 'block';
+  try {
+    const res = await fetch('/airtable?action=parceiro', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        'Nome Empresa': nome,
+        'Tipo': tipo,
+        'Contacto': contacto,
+        'Zona': zona || null,
+        'Mensagem': msg || null,
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    document.getElementById('parceiros-form').style.display = 'none';
+    document.getElementById('parceiros-success').style.display = 'block';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '📩 Quero ser parceiro';
+    showToast('Erro ao enviar. Tenta novamente.');
+  }
 }
 
 // ── RETIRAR FOTO PERFIL ──
