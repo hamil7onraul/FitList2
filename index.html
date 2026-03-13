@@ -484,16 +484,16 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <button class="btn-orange" onclick="showPage('encontrar')" style="font-size:1rem;padding:1rem 2.5rem;">🎯 Encontrar o meu treinador ideal</button>
   </section>
 
-  <section style="padding:5rem 3rem;max-width:1200px;margin:0 auto;">
-    <div class="section-label">Agenda</div>
-    <h2 class="section-title">Próximos <span style="color:var(--orange)">Eventos</span></h2>
-    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2rem;">Corridas, competições e muito mais em Luanda.</p>
-    <div id="home-eventos-grid" class="eventos-grid">
-      <div class="loading"><div class="loading-spinner"></div>A carregar...</div>
+  <!-- Faixa de eventos -->
+  <section onclick="showPage('eventos')" style="padding:1.25rem 3rem;background:linear-gradient(90deg,rgba(232,80,10,0.15),rgba(232,80,10,0.05));border-top:1px solid rgba(232,80,10,0.2);border-bottom:1px solid rgba(232,80,10,0.2);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:1rem;transition:background 0.2s;" onmouseover="this.style.background='linear-gradient(90deg,rgba(232,80,10,0.25),rgba(232,80,10,0.1))'" onmouseout="this.style.background='linear-gradient(90deg,rgba(232,80,10,0.15),rgba(232,80,10,0.05))'">
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:1.5rem;">🏃</span>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;">Gostas de correr? Preferes treino em grupo?</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:0.1rem;">Descobre os próximos eventos fitness em Luanda</div>
+      </div>
     </div>
-    <div style="text-align:center;margin-top:2rem;">
-      <button class="btn-outline" onclick="showPage('eventos')" style="padding:0.9rem 2.5rem;">Ver todos os eventos →</button>
-    </div>
+    <span style="color:var(--orange);font-weight:700;font-size:0.88rem;white-space:nowrap;">Ver eventos →</span>
   </section>
 </div>
 
@@ -859,6 +859,23 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <div style="text-align:center;margin-top:3rem;padding:2rem;background:var(--mid);border:1px solid var(--border);border-radius:16px;">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">Tens um evento para divulgar?</p>
       <a href="https://wa.me/351931916420?text=Ol%C3%A1%20FitList!%20Quero%20divulgar%20um%20evento%3A%20" target="_blank" class="btn-orange" style="display:inline-block;text-decoration:none;padding:0.75rem 1.5rem;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">📢 Submeter evento</a>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div id="evento-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;overflow-y:auto;padding:2rem 1rem;" onclick="closeEventoModal(event)">
+  <div id="evento-modal-content" style="background:var(--mid);border:1px solid var(--border);border-radius:20px;max-width:600px;margin:2rem auto;overflow:hidden;" onclick="event.stopPropagation()">
+    <div id="evento-modal-img" style="height:260px;overflow:hidden;position:relative;background:var(--mid2);display:flex;align-items:center;justify-content:center;font-size:4rem;"></div>
+    <div style="padding:2rem;">
+      <div id="evento-modal-tipo" style="display:inline-block;background:var(--orange);color:white;border-radius:6px;padding:0.2rem 0.7rem;font-size:0.72rem;font-weight:700;text-transform:uppercase;margin-bottom:1rem;"></div>
+      <h2 id="evento-modal-nome" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:1rem;"></h2>
+      <div id="evento-modal-meta" style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.25rem;"></div>
+      <p id="evento-modal-desc" style="color:var(--muted);font-size:0.88rem;line-height:1.7;margin-bottom:1.5rem;"></p>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <a id="evento-modal-btn" href="#" target="_blank" class="btn-orange" style="display:none;text-decoration:none;padding:0.85rem 1.75rem;border-radius:12px;font-family:'Syne',sans-serif;font-weight:700;">Inscrever →</a>
+        <button onclick="closeEventoModal()" style="background:var(--mid2);border:1px solid var(--border);color:var(--muted);border-radius:12px;padding:0.85rem 1.5rem;cursor:pointer;font-size:0.85rem;">Fechar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1512,6 +1529,52 @@ async function submitRegister() {
   }
 }
 
+let eventosData = [];
+
+// ── MODAL EVENTO ──
+function openEventoModal(record) {
+  const f = record.fields;
+  const imgUrl = f['Imagem URL'] || f['Imagem']?.[0]?.url;
+  const tipoEmoji = { 'Corrida':'🏃','Bodybuilding':'💪','Crossfit':'🔥','Yoga':'🧘','Boxe':'🥊','Natação':'🏊','Futebol':'⚽','Outro':'🏅' };
+  const emoji = tipoEmoji[f['Tipo']] || '🏅';
+
+  document.getElementById('evento-modal-img').innerHTML = imgUrl
+    ? `<img src="${imgUrl}" alt="${f['Nome']}" style="width:100%;height:100%;object-fit:cover;">`
+    : `<span>${emoji}</span>`;
+
+  document.getElementById('evento-modal-tipo').textContent = f['Tipo'] || '';
+  document.getElementById('evento-modal-tipo').style.display = f['Tipo'] ? 'inline-block' : 'none';
+  document.getElementById('evento-modal-nome').textContent = f['Nome'] || '';
+  document.getElementById('evento-modal-desc').textContent = f['Descrição'] || '';
+
+  const meta = [];
+  if (f['Data']) meta.push(`📅 ${f['Data']}`);
+  if (f['Hora']) meta.push(`🕐 ${f['Hora']}`);
+  if (f['Local']) meta.push(`📍 ${f['Local']}`);
+  if (f['Zona']) meta.push(`🗺️ ${f['Zona']}`);
+  document.getElementById('evento-modal-meta').innerHTML = meta.map(m =>
+    `<span style="font-size:0.82rem;color:var(--muted);background:var(--mid2);padding:0.3rem 0.7rem;border-radius:6px;">${m}</span>`
+  ).join('');
+
+  const btn = document.getElementById('evento-modal-btn');
+  if (f['Link Inscrição']) {
+    btn.href = f['Link Inscrição'];
+    btn.style.display = 'inline-block';
+  } else {
+    btn.style.display = 'none';
+  }
+
+  document.getElementById('evento-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEventoModal(e) {
+  if (!e || e.target === document.getElementById('evento-modal')) {
+    document.getElementById('evento-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
 // ── CARREGAR EVENTOS NA HOME (máx 3) ──
 async function loadHomeEventos() {
   const grid = document.getElementById('home-eventos-grid');
@@ -1558,18 +1621,18 @@ async function loadEventos() {
     const res = await fetch('/airtable?action=eventos');
     if (!res.ok) throw new Error();
     const data = await res.json();
-    const eventos = data.records || [];
-    if (eventos.length === 0) {
+    eventosData = data.records || [];
+    if (eventosData.length === 0) {
       grid.innerHTML = '<div class="loading" style="grid-column:1/-1;">Nenhum evento disponível de momento. Em breve!</div>';
       return;
     }
-    grid.innerHTML = eventos.map(r => {
+    grid.innerHTML = eventosData.map((r, i) => {
       const f = r.fields;
       const imgUrl = f['Imagem URL'] || f['Imagem']?.[0]?.url;
       const tipoEmoji = { 'Corrida':'🏃','Bodybuilding':'💪','Crossfit':'🔥','Yoga':'🧘','Boxe':'🥊','Natação':'🏊','Futebol':'⚽','Outro':'🏅' };
       const emoji = tipoEmoji[f['Tipo']] || '🏅';
       return `
-        <div class="evento-card">
+        <div class="evento-card" onclick="openEventoModal(eventosData[${i}])">
           <div class="evento-img">
             ${imgUrl ? `<img src="${imgUrl}" alt="${f['Nome']}">` : emoji}
             ${f['Tipo'] ? `<div class="evento-tipo-badge">${f['Tipo']}</div>` : ''}
@@ -1583,8 +1646,7 @@ async function loadEventos() {
               ${f['Zona'] ? `<span class="evento-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}</span>` : ''}
               ${f['Local'] ? `<span class="evento-meta-item">📍 ${f['Local']}</span>` : ''}
             </div>
-            ${f['Descrição'] ? `<div class="evento-desc">${f['Descrição']}</div>` : ''}
-            ${f['Link Inscrição'] ? `<a href="${f['Link Inscrição']}" target="_blank" class="evento-btn">Inscrever →</a>` : ''}
+            <p style="font-size:0.75rem;color:var(--orange);margin-top:0.5rem;">Ver detalhes →</p>
           </div>
         </div>`;
     }).join('');
