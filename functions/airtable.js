@@ -1,11 +1,14 @@
-const BASE_ID  = 'appCBkBHDMOqS3rbE';
-const TABLE_ID = 'tblmVytcK7577DUMU';
-const BASE_URL = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
+const BASE_ID       = 'appCBkBHDMOqS3rbE';
+const TABLE_ID      = 'tblmVytcK7577DUMU';
+const PEDIDOS_ID    = 'tbltJJIUiQc9VFN8z';
+const PARCEIROS_ID  = 'tbliR2rgG2RMFhH3a';
+const BASE_URL      = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`;
+const PEDIDOS_URL   = `https://api.airtable.com/v0/${BASE_ID}/${PEDIDOS_ID}`;
+const PARCEIROS_URL = `https://api.airtable.com/v0/${BASE_ID}/${PARCEIROS_ID}`;
 
 export async function onRequest(context) {
   const { request, env } = context;
 
-  // CORS preflight
   if (request.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders() });
   }
@@ -60,6 +63,28 @@ export async function onRequest(context) {
     if (action === 'register') {
       const body = await request.json();
       const res  = await fetch(BASE_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ fields: body })
+      });
+      const data = await res.json();
+      return respond(200, data);
+    }
+
+    if (action === 'pedido') {
+      const body = await request.json();
+      const res  = await fetch(PEDIDOS_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ fields: body })
+      });
+      const data = await res.json();
+      return respond(200, data);
+    }
+
+    if (action === 'parceiro') {
+      const body = await request.json();
+      const res  = await fetch(PARCEIROS_URL, {
         method: 'POST',
         headers,
         body: JSON.stringify({ fields: body })
