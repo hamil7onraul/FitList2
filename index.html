@@ -246,6 +246,24 @@ nav {
 
 .featured-section { padding:0 3rem 5rem; max-width:1200px; margin:0 auto; }
 
+/* ── EVENTOS ── */
+.eventos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:2rem; }
+.evento-card { background:var(--mid); border:1px solid var(--border); border-radius:16px; overflow:hidden; cursor:pointer; transition:transform 0.2s, border-color 0.2s; }
+.evento-card:hover { transform:translateY(-4px); border-color:rgba(232,80,10,0.3); }
+.evento-img { height:180px; overflow:hidden; background:var(--mid2); display:flex; align-items:center; justify-content:center; font-size:3rem; position:relative; }
+.evento-img img { width:100%; height:100%; object-fit:cover; }
+.evento-tipo-badge { position:absolute; top:0.75rem; left:0.75rem; background:var(--orange); color:white; border-radius:6px; padding:0.2rem 0.6rem; font-size:0.68rem; font-weight:700; text-transform:uppercase; }
+.evento-destaque-badge { position:absolute; top:0.75rem; right:0.75rem; background:#FFB800; color:#000; border-radius:6px; padding:0.2rem 0.6rem; font-size:0.68rem; font-weight:700; }
+.evento-body { padding:1.25rem; }
+.evento-nome { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:0.5rem; }
+.evento-meta { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem; }
+.evento-meta-item { font-size:0.75rem; color:var(--muted); display:flex; align-items:center; gap:0.3rem; }
+.evento-desc { font-size:0.8rem; color:var(--muted); line-height:1.5; margin-bottom:1rem; }
+.evento-btn { display:inline-block; background:var(--orange); color:white; border-radius:8px; padding:0.5rem 1.1rem; font-size:0.8rem; font-weight:700; text-decoration:none; font-family:'Syne',sans-serif; transition:background 0.2s; }
+.evento-btn:hover { background:var(--orange-light); }
+@media(max-width:900px) { .eventos-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:500px) { .eventos-grid { grid-template-columns:1fr; } }
+
 /* FOOTER */
 footer { border-top:1px solid var(--border); padding:2rem 3rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; background:var(--dark); }
 .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; }
@@ -308,6 +326,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   <div class="logo" onclick="showPage('home')">Fit<span>List</span></div>
   <div class="nav-right">
     <button class="nav-link" onclick="showPage('listings')">Explorar</button>
+    <button class="nav-link" onclick="showPage('eventos')">Eventos</button>
     <button class="nav-link" onclick="showPage('parceiros')">Parceiros</button>
     <button class="nav-link" onclick="showPage('about')">Sobre</button>
     <button class="btn-orange" onclick="showPage('register')">Sou Treinador</button>
@@ -321,6 +340,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
 <div id="mobile-menu" class="mobile-menu">
   <button class="close-btn" onclick="document.getElementById('mobile-menu').classList.remove('open')">✕</button>
   <button onclick="showPage('listings');document.getElementById('mobile-menu').classList.remove('open')">Explorar</button>
+  <button onclick="showPage('eventos');document.getElementById('mobile-menu').classList.remove('open')">Eventos</button>
   <button onclick="showPage('parceiros');document.getElementById('mobile-menu').classList.remove('open')">Parceiros</button>
   <button onclick="showPage('about');document.getElementById('mobile-menu').classList.remove('open')">Sobre</button>
   <button onclick="showPage('register');document.getElementById('mobile-menu').classList.remove('open')" style="color:var(--orange)">Sou Treinador</button>
@@ -462,6 +482,18 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2 class="section-title" style="max-width:100%;margin:0 auto 1rem;">Não sabes por onde começar?</h2>
     <p style="color:var(--muted);font-size:0.95rem;max-width:480px;margin:0 auto 2rem;line-height:1.7;">Diz-nos o teu objectivo e encontramos o treinador perfeito para ti.</p>
     <button class="btn-orange" onclick="showPage('encontrar')" style="font-size:1rem;padding:1rem 2.5rem;">🎯 Encontrar o meu treinador ideal</button>
+  </section>
+
+  <section style="padding:5rem 3rem;max-width:1200px;margin:0 auto;">
+    <div class="section-label">Agenda</div>
+    <h2 class="section-title">Próximos <span style="color:var(--orange)">Eventos</span></h2>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2rem;">Corridas, competições e muito mais em Luanda.</p>
+    <div id="home-eventos-grid" class="eventos-grid">
+      <div class="loading"><div class="loading-spinner"></div>A carregar...</div>
+    </div>
+    <div style="text-align:center;margin-top:2rem;">
+      <button class="btn-outline" onclick="showPage('eventos')" style="padding:0.9rem 2.5rem;">Ver todos os eventos →</button>
+    </div>
   </section>
 </div>
 
@@ -736,7 +768,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <div id="encontrar-form-container">
       <div class="edit-form">
         <label>Qual é o teu objectivo? *</label>
-        <select id="enc-objetivo">
+        <select id="enc-objetivo" onchange="toggleOutroObjetivo(this.value)">
           <option value="">Selecciona o teu objectivo</option>
           <option>Perder peso</option>
           <option>Ganhar massa muscular</option>
@@ -747,6 +779,9 @@ footer p { font-size:0.72rem; color:var(--muted); }
           <option>Reduzir stress / bem-estar</option>
           <option>Outro</option>
         </select>
+        <div id="enc-objetivo-outro-container" style="display:none;margin-top:0.5rem;">
+          <input type="text" id="enc-objetivo-outro" placeholder="Descreve o teu objectivo...">
+        </div>
 
         <label>Onde preferes treinar? *</label>
         <select id="enc-zona">
@@ -807,6 +842,23 @@ footer p { font-size:0.72rem; color:var(--muted); }
       <h3 style="font-family:'Syne',sans-serif;font-size:1.4rem;margin-bottom:0.75rem;">Pedido recebido!</h3>
       <p style="color:var(--muted);font-size:0.9rem;line-height:1.6;">Recebemos o teu pedido. Um treinador compatível com o teu perfil entrará em contacto via WhatsApp em menos de 24 horas.<br><br>Boa sorte no teu percurso fitness! 💪</p>
       <button class="btn-orange" onclick="showPage('home')" style="margin-top:2rem;">Voltar ao início</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENTOS -->
+<div id="eventos-page" class="page">
+  <div style="max-width:1200px;margin:0 auto;padding:7rem 3rem 5rem;">
+    <button class="back-btn" onclick="showPage('home')">← Voltar</button>
+    <div class="section-label">Agenda fitness</div>
+    <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:0.5rem;">Eventos em <span style="color:var(--orange)">Luanda</span></h2>
+    <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2rem;">Corridas, competições, bootcamps e muito mais.</p>
+    <div id="eventos-grid" class="eventos-grid">
+      <div class="loading"><div class="loading-spinner"></div>A carregar eventos...</div>
+    </div>
+    <div style="text-align:center;margin-top:3rem;padding:2rem;background:var(--mid);border:1px solid var(--border);border-radius:16px;">
+      <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">Tens um evento para divulgar?</p>
+      <a href="https://wa.me/351931916420?text=Ol%C3%A1%20FitList!%20Quero%20divulgar%20um%20evento%3A%20" target="_blank" class="btn-orange" style="display:inline-block;text-decoration:none;padding:0.75rem 1.5rem;border-radius:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;">📢 Submeter evento</a>
     </div>
   </div>
 </div>
@@ -900,6 +952,7 @@ function showPage(page) {
   window.scrollTo({ top:0, behavior:'smooth' });
   // Quando vai para listings, carrega os treinadores
   if (page === 'listings') loadTrainers();
+  if (page === 'eventos') loadEventos();
 }
 
 function heroSearch() {
@@ -1459,6 +1512,93 @@ async function submitRegister() {
   }
 }
 
+// ── CARREGAR EVENTOS NA HOME (máx 3) ──
+async function loadHomeEventos() {
+  const grid = document.getElementById('home-eventos-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch('/airtable?action=eventos');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const eventos = (data.records || []).slice(0, 3);
+    if (eventos.length === 0) {
+      grid.innerHTML = '<div class="loading" style="grid-column:1/-1;font-size:0.85rem;">Em breve teremos eventos para mostrar!</div>';
+      return;
+    }
+    grid.innerHTML = eventos.map(r => {
+      const f = r.fields;
+      const imgUrl = f['Imagem URL'] || f['Imagem']?.[0]?.url;
+      const tipoEmoji = { 'Corrida':'🏃','Bodybuilding':'💪','Crossfit':'🔥','Yoga':'🧘','Boxe':'🥊','Natação':'🏊','Futebol':'⚽','Outro':'🏅' };
+      const emoji = tipoEmoji[f['Tipo']] || '🏅';
+      return `
+        <div class="evento-card" onclick="showPage('eventos')">
+          <div class="evento-img">
+            ${imgUrl ? `<img src="${imgUrl}" alt="${f['Nome']}">` : emoji}
+            ${f['Tipo'] ? `<div class="evento-tipo-badge">${f['Tipo']}</div>` : ''}
+          </div>
+          <div class="evento-body">
+            <div class="evento-nome">${f['Nome'] || ''}</div>
+            <div class="evento-meta">
+              ${f['Data'] ? `<span class="evento-meta-item">📅 ${f['Data']}</span>` : ''}
+              ${f['Zona'] ? `<span class="evento-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    if (grid) grid.innerHTML = '';
+  }
+}
+
+// ── CARREGAR EVENTOS ──
+async function loadEventos() {
+  const grid = document.getElementById('eventos-grid');
+  if (!grid) return;
+  try {
+    const res = await fetch('/airtable?action=eventos');
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    const eventos = data.records || [];
+    if (eventos.length === 0) {
+      grid.innerHTML = '<div class="loading" style="grid-column:1/-1;">Nenhum evento disponível de momento. Em breve!</div>';
+      return;
+    }
+    grid.innerHTML = eventos.map(r => {
+      const f = r.fields;
+      const imgUrl = f['Imagem URL'] || f['Imagem']?.[0]?.url;
+      const tipoEmoji = { 'Corrida':'🏃','Bodybuilding':'💪','Crossfit':'🔥','Yoga':'🧘','Boxe':'🥊','Natação':'🏊','Futebol':'⚽','Outro':'🏅' };
+      const emoji = tipoEmoji[f['Tipo']] || '🏅';
+      return `
+        <div class="evento-card">
+          <div class="evento-img">
+            ${imgUrl ? `<img src="${imgUrl}" alt="${f['Nome']}">` : emoji}
+            ${f['Tipo'] ? `<div class="evento-tipo-badge">${f['Tipo']}</div>` : ''}
+            ${f['Destaque'] ? `<div class="evento-destaque-badge">⭐ Destaque</div>` : ''}
+          </div>
+          <div class="evento-body">
+            <div class="evento-nome">${f['Nome'] || ''}</div>
+            <div class="evento-meta">
+              ${f['Data'] ? `<span class="evento-meta-item">📅 ${f['Data']}</span>` : ''}
+              ${f['Hora'] ? `<span class="evento-meta-item">🕐 ${f['Hora']}</span>` : ''}
+              ${f['Zona'] ? `<span class="evento-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${f['Zona']}</span>` : ''}
+              ${f['Local'] ? `<span class="evento-meta-item">📍 ${f['Local']}</span>` : ''}
+            </div>
+            ${f['Descrição'] ? `<div class="evento-desc">${f['Descrição']}</div>` : ''}
+            ${f['Link Inscrição'] ? `<a href="${f['Link Inscrição']}" target="_blank" class="evento-btn">Inscrever →</a>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    if (grid) grid.innerHTML = '<div class="loading" style="grid-column:1/-1;">Erro ao carregar eventos.</div>';
+  }
+}
+
+// ── TOGGLE OUTRO OBJECTIVO ──
+function toggleOutroObjetivo(val) {
+  const container = document.getElementById('enc-objetivo-outro-container');
+  if (container) container.style.display = val === 'Outro' ? 'block' : 'none';
+}
+
 // ── SUBMETER PEDIDO DE TREINADOR ──
 async function submitEncontrar() {
   const nome = document.getElementById('enc-nome').value.trim();
@@ -1482,7 +1622,7 @@ async function submitEncontrar() {
       body: JSON.stringify({
         'Nome': nome,
         'WhatsApp': whatsapp,
-        'Objetivo': objetivo,
+        'Objetivo': objetivo === 'Outro' ? (document.getElementById('enc-objetivo-outro').value.trim() || 'Outro') : objetivo,
         'Zona': zona,
         'Frequência': document.getElementById('enc-frequencia').value || null,
         'Modalidade': document.getElementById('enc-modalidade').value || null,
@@ -1903,6 +2043,7 @@ if (editToken) {
 } else {
   loadTrainers();
   loadFeatured();
+  loadHomeEventos();
 }
 
 // Cat pills interactivos
