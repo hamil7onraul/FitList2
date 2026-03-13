@@ -265,9 +265,24 @@ nav {
 @media(max-width:500px) { .eventos-grid { grid-template-columns:1fr; } }
 
 /* ── ESPECIALIDADE CHECKBOXES ── */
-#reg-especialidades label, #ef-especialidades label { font-size:0.82rem; }
-@media(max-width:480px) {
-  #reg-especialidades label, #ef-especialidades label { font-size:0.72rem; padding:0.5rem 0.6rem; }
+#reg-especialidades, #ef-especialidades {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+#reg-especialidades label, #ef-especialidades label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--mid2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 400;
+  white-space: nowrap;
 }
 
 /* FOOTER */
@@ -588,17 +603,17 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <input type="text" id="reg-nome" placeholder="Ex: Carlos Mbemba">
 
         <label>Especialidade * <span style="font-size:0.72rem;color:var(--muted);font-weight:400;">(máx. 5)</span></label>
-        <div id="reg-especialidades" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.25rem;">
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Personal Trainer" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Personal Trainer</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Treino Funcional" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Treino Funcional</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Boxe" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Boxe</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Judo" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Judo</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="MMA" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> MMA</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Muay Thai" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Muay Thai</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Crossfit" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Crossfit</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Yoga / Pilates" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Yoga / Pilates</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Karaté" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Karaté</label>
-          <label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;"><input type="checkbox" name="reg-espec" value="Outra" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Outra</label>
+        <div id="reg-especialidades" >
+          <label ><input type="checkbox" name="reg-espec" value="Personal Trainer" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Personal Trainer</label>
+          <label ><input type="checkbox" name="reg-espec" value="Treino Funcional" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Treino Funcional</label>
+          <label ><input type="checkbox" name="reg-espec" value="Boxe" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Boxe</label>
+          <label ><input type="checkbox" name="reg-espec" value="Judo" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Judo</label>
+          <label ><input type="checkbox" name="reg-espec" value="MMA" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> MMA</label>
+          <label ><input type="checkbox" name="reg-espec" value="Muay Thai" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Muay Thai</label>
+          <label ><input type="checkbox" name="reg-espec" value="Crossfit" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Crossfit</label>
+          <label ><input type="checkbox" name="reg-espec" value="Yoga / Pilates" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Yoga / Pilates</label>
+          <label ><input type="checkbox" name="reg-espec" value="Karaté" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Karaté</label>
+          <label ><input type="checkbox" name="reg-espec" value="Outra" onchange="limitarEspecReg(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> Outra</label>
         </div>
 
         <label>Zona em Luanda *</label>
@@ -1331,7 +1346,7 @@ function openProfile(index) {
           </button>
           <button onclick="copyLinkForInsta('${profileUrl}');closeShareMenu();" style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.75rem;border-radius:8px;color:var(--white);font-size:0.82rem;background:transparent;border:none;cursor:pointer;width:100%;" onmouseover="this.style.background='var(--mid2)'" onmouseout="this.style.background='transparent'">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            Instagram (copia link)
+            Copiar link para Instagram
           </button>
           <button onclick="copyProfileLink('${profileUrl}');closeShareMenu();" style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem 0.75rem;border-radius:8px;color:var(--white);font-size:0.82rem;background:transparent;border:none;cursor:pointer;width:100%;" onmouseover="this.style.background='var(--mid2)'" onmouseout="this.style.background='transparent'">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -1971,12 +1986,12 @@ async function loadEditPage(token) {
         <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
 
         <label>Especialidade <span style="font-size:0.72rem;color:var(--muted);font-weight:400;">(máx. 5)</span></label>
-        <div id="ef-especialidades" style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.25rem;">
+        <div id="ef-especialidades" >
           ${['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Outra'].map(e => {
             const selected = Array.isArray(f['Especialidade'])
               ? f['Especialidade'].includes(e)
               : f['Especialidade'] === e;
-            return `<label style="display:flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;cursor:pointer;font-size:0.82rem;font-weight:400;min-height:44px;">
+            return `<label >
               <input type="checkbox" name="ef-espec" value="${e}" ${selected?'checked':''} onchange="limitarEspec(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;">
               ${e}
             </label>`;
