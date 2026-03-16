@@ -1754,6 +1754,128 @@ async function loadEventos() {
   }
 }
 
+// ── BADGE PARA REDES SOCIAIS ──
+async function gerarBadge(nome, especialidade, fotoUrl) {
+  const canvas = document.getElementById('badge-canvas');
+  const W = 1080, H = 1080;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Fundo escuro
+  ctx.fillStyle = '#0A0909';
+  ctx.fillRect(0, 0, W, H);
+
+  // Faixa laranja topo
+  ctx.fillStyle = '#E8500A';
+  ctx.fillRect(0, 0, W, 10);
+
+  // Faixa laranja fundo
+  ctx.fillRect(0, H - 10, W, 10);
+
+  // Círculo fundo para foto
+  const cx = W / 2, cy = 390, r = 200;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#1E1C1B';
+  ctx.fill();
+  ctx.strokeStyle = '#E8500A';
+  ctx.lineWidth = 8;
+  ctx.stroke();
+  ctx.clip();
+
+  // Foto de perfil
+  if (fotoUrl) {
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = rej;
+        img.src = fotoUrl;
+      });
+      ctx.drawImage(img, cx - r, cy - r, r * 2, r * 2);
+    } catch {
+      // fallback: iniciais
+      ctx.restore();
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.fillStyle = '#1E1C1B';
+      ctx.fill();
+      ctx.fillStyle = '#E8500A';
+      ctx.font = 'bold 120px Syne, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const iniciais = nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+      ctx.fillText(iniciais, cx, cy);
+    }
+  } else {
+    ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.fillStyle = '#E8500A';
+    ctx.font = 'bold 120px Syne, Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const iniciais = nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+    ctx.fillText(iniciais, cx, cy);
+  }
+  ctx.restore();
+
+  // Nome
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 64px Syne, Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(nome, cx, 660);
+
+  // Especialidade
+  ctx.fillStyle = '#E8500A';
+  ctx.font = '400 36px DM Sans, Arial';
+  ctx.fillText(especialidade, cx, 715);
+
+  // Linha separadora
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(200, 760);
+  ctx.lineTo(880, 760);
+  ctx.stroke();
+
+  // Texto "Treinador na plataforma"
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '400 28px DM Sans, Arial';
+  ctx.fillText('Treinador na plataforma', cx, 820);
+
+  // Logo FitList
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = 'bold 72px Syne, Arial';
+  ctx.textAlign = 'center';
+  const fitW = ctx.measureText('Fit').width;
+  const listW = ctx.measureText('List').width;
+  const totalW = fitW + listW;
+  ctx.fillText('Fit', cx - listW / 2, 920);
+  ctx.fillStyle = '#E8500A';
+  ctx.fillText('List', cx + fitW / 2, 920);
+
+  // URL
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '400 22px DM Sans, Arial';
+  ctx.fillText('fitlist2.pages.dev', cx, 970);
+
+  // Download
+  const link = document.createElement('a');
+  link.download = `fitlist_badge_${nome.replace(/\s+/g, '_').toLowerCase()}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('Badge descarregado! Partilha nas tuas redes 🎉');
+}
+
 // ── TOGGLE OUTRO OBJECTIVO ──
 function toggleOutroObjetivo(val) {
   const container = document.getElementById('enc-objetivo-outro-container');
@@ -2069,6 +2191,15 @@ async function loadEditPage(token) {
           </div>
           <input type="file" id="ef-galeria" accept="image/*,video/*" multiple style="display:none;" onchange="previewGallery(this)">
           <div class="upload-preview" id="gallery-preview"></div>
+        </div>
+
+        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
+          <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:0.4rem;">🏅 Badge para redes sociais</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem;">Descarrega a tua imagem de treinador FitList e partilha no Instagram ou WhatsApp.</p>
+          <button type="button" onclick="gerarBadge('${f['Nome']}', '${getEspecPrimaria(f)}', '${f['Foto Perfil'] || f['Foto']?.[0]?.url || ''}')" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;">
+            📲 Descarregar badge
+          </button>
+          <canvas id="badge-canvas" style="display:none;"></canvas>
         </div>
 
         <button class="save-btn" onclick="saveEditProfile('${record.id}')">💾 Guardar alterações</button>
