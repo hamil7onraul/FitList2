@@ -2184,12 +2184,12 @@ async function saveEditProfile(recordId) {
 const urlParams = new URLSearchParams(window.location.search);
 const editToken = urlParams.get('editar');
 const perfilId  = urlParams.get('perfil');
+const pageParam = urlParams.get('page');
 
 if (editToken) {
   showPage('edit');
   loadEditPage(editToken);
 } else if (perfilId) {
-  // Carrega treinadores e abre o perfil directo
   loadTrainers().then(() => {
     const index = allTrainers.findIndex(r => r.id === perfilId);
     if (index >= 0) {
@@ -2199,6 +2199,16 @@ if (editToken) {
     }
   });
   loadFeatured();
+} else if (pageParam === 'register') {
+  loadTrainers();
+  loadFeatured();
+  loadHomeEventos();
+  showPage('register');
+} else if (pageParam === 'encontrar') {
+  loadTrainers();
+  loadFeatured();
+  loadHomeEventos();
+  showPage('encontrar');
 } else {
   loadTrainers();
   loadFeatured();
