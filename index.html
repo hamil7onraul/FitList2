@@ -2217,8 +2217,14 @@ async function saveEditProfile(recordId) {
   btn.disabled = true;
   btn.textContent = 'A guardar...';
 
-  const precoRaw = document.getElementById('ef-preco').value;
-  const preco = isNaN(Number(precoRaw)) || precoRaw === '' ? precoRaw : Number(precoRaw);
+  // Converte preço: número → Number, vazio → null, texto → null (Airtable só aceita número neste campo)
+  function parsePreco(val) {
+    if (!val || val.trim() === '') return null;
+    const n = Number(val.replace(/\s/g, ''));
+    return isNaN(n) ? null : n;
+  }
+
+  const preco = parsePreco(document.getElementById('ef-preco').value);
 
   // Upload foto de perfil para Cloudinary
   const fotoInput = document.getElementById('ef-foto');
@@ -2269,15 +2275,15 @@ async function saveEditProfile(recordId) {
     'Especialidade': Array.from(document.querySelectorAll('input[name="ef-espec"]:checked')).map(cb => cb.value),
     'Género': document.getElementById('ef-genero').value || null,
     'Zona': document.getElementById('ef-zona').value,
-    'Preço por Sessão': preco || null,
-    'Preço Pack 1x/Semana': document.getElementById('ef-pack1').value || null,
-    'Preço Pack 2x/Semana': document.getElementById('ef-pack2').value || null,
-    'Preço Pack 3x/Semana': document.getElementById('ef-pack3').value || null,
-    'Preço Pack 4x/Semana': document.getElementById('ef-pack4').value || null,
-    'Preço Pack 5x/Semana': document.getElementById('ef-pack5').value || null,
-    'Preço Pack 6x/Semana': document.getElementById('ef-pack6').value || null,
-    'Preço Pack 7x/Semana': document.getElementById('ef-pack7').value || null,
-    'Preço Consulta Online': document.getElementById('ef-consulta').value || null,
+    'Preço por Sessão': preco,
+    'Preço Pack 1x/Semana': parsePreco(document.getElementById('ef-pack1').value),
+    'Preço Pack 2x/Semana': parsePreco(document.getElementById('ef-pack2').value),
+    'Preço Pack 3x/Semana': parsePreco(document.getElementById('ef-pack3').value),
+    'Preço Pack 4x/Semana': parsePreco(document.getElementById('ef-pack4').value),
+    'Preço Pack 5x/Semana': parsePreco(document.getElementById('ef-pack5').value),
+    'Preço Pack 6x/Semana': parsePreco(document.getElementById('ef-pack6').value),
+    'Preço Pack 7x/Semana': parsePreco(document.getElementById('ef-pack7').value),
+    'Preço Consulta Online': parsePreco(document.getElementById('ef-consulta').value),
     'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value,
   };
