@@ -40,6 +40,11 @@ export async function onRequest(context) {
       if (!id) return respond(400, { error: 'ID em falta' });
       const body = await request.json();
       if (!body.fields) return respond(400, { error: 'Fields em falta' });
+      // Garantir que Especialidade é sempre array para Multiple Select
+      if (body.fields['Especialidade'] !== undefined) {
+        const e = body.fields['Especialidade'];
+        body.fields['Especialidade'] = Array.isArray(e) ? e : [e];
+      }
       const res  = await fetch(`${BASE_URL}/${id}`, {
         method: 'PATCH',
         headers,
@@ -64,6 +69,11 @@ export async function onRequest(context) {
 
     if (action === 'register') {
       const body = await request.json();
+      // Garantir que Especialidade é sempre array para Multiple Select
+      if (body['Especialidade'] !== undefined) {
+        const e = body['Especialidade'];
+        body['Especialidade'] = Array.isArray(e) ? e : [e];
+      }
       const res  = await fetch(BASE_URL, {
         method: 'POST',
         headers,
