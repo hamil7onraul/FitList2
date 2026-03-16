@@ -2217,11 +2217,12 @@ async function saveEditProfile(recordId) {
   btn.disabled = true;
   btn.textContent = 'A guardar...';
 
-  // Converte preço: número → Number, vazio → null, texto → null (Airtable só aceita número neste campo)
+  // Converte preço: aceita número ou texto (ex: "Sob Consulta"), vazio → null
   function parsePreco(val) {
     if (!val || val.trim() === '') return null;
-    const n = Number(val.replace(/\s/g, ''));
-    return isNaN(n) ? null : n;
+    const trimmed = val.trim();
+    const n = Number(trimmed.replace(/\s/g, ''));
+    return isNaN(n) ? trimmed : n;
   }
 
   const preco = parsePreco(document.getElementById('ef-preco').value);
