@@ -2295,8 +2295,20 @@ async function saveEditProfile(recordId) {
     fields['Galeria Cloudinary'] = allUrls;
   }
 
-  // Remove campos nulos — excepto Foto Perfil que pode ser REMOVED
-  Object.keys(fields).forEach(k => { if (k !== 'Foto Perfil' && (fields[k] === null || fields[k] === '')) delete fields[k]; });
+  // Remove campos nulos — excepto Foto Perfil que pode ser REMOVED e Especialidade que é array
+  Object.keys(fields).forEach(k => {
+    if (k === 'Foto Perfil') return;
+    if (k === 'Especialidade') return; // nunca remover — Airtable precisa do array
+    if (fields[k] === null || fields[k] === '') delete fields[k];
+  });
+
+  // Garantir que Especialidade é sempre array não vazio
+  if (!fields['Especialidade'] || fields['Especialidade'].length === 0) {
+    showToast('Selecciona pelo menos uma especialidade.');
+    btn.disabled = false;
+    btn.textContent = '💾 Guardar alterações';
+    return;
+  }
 
   try {
     btn.textContent = 'A guardar...';
@@ -2307,7 +2319,9 @@ async function saveEditProfile(recordId) {
     });
     const data = await res.json();
     if (data.error) {
-      throw new Error(data.error.message || JSON.stringify(data.error));
+      const msg = data.error.message || data.error.type || JSON.stringify(data.error);
+      console.error('Airtable error:', data.error);
+      throw new Error(msg);
     }
     btn.textContent = '✅ Guardado com sucesso!';
     btn.style.background = 'var(--green)';
@@ -2315,7 +2329,8 @@ async function saveEditProfile(recordId) {
   } catch(e) {
     btn.disabled = false;
     btn.textContent = '💾 Guardar alterações';
-    showToast('Erro ao guardar. Tenta novamente.');
+    console.error('Save error:', e.message);
+    showToast('Erro: ' + e.message);
   }
 }
 
