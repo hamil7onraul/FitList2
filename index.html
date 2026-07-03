@@ -1106,6 +1106,16 @@ function getInitials(nome) {
   return (first + last).toUpperCase() || 'FL';
 }
 
+// ── SLUG PARA LINKS PROFISSIONAIS ──
+// "Carlos Mbemba" → "carlos-mbemba" (sem acentos, minúsculas, hífens)
+function slugify(nome) {
+  return String(nome || '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 // ── HELPERS ESPECIALIDADE ──
 function getEspecPrimaria(f) {
   const e = f['Especialidade'];
@@ -1502,7 +1512,7 @@ function openProfile(index) {
   const existingShare = document.getElementById('profile-share-row');
   if (existingShare) existingShare.remove();
 
-  const profileUrl = `${window.location.origin}${window.location.pathname}?perfil=${record.id}`;
+  const profileUrl = `${window.location.origin}/${slugify(f['Nome'])}`;
   const textoWA    = encodeURIComponent(`Vê o perfil de ${f['Nome']} no FitList Angola 💪\n${profileUrl}`);
   const denunciaWA = encodeURIComponent(`Denúncia de conteúdo no perfil: ${f['Nome']} — FitList`);
 
@@ -1919,7 +1929,14 @@ async function loadEventos() {
 }
 
 // ── GERAR BADGE DE TREINADOR ──
-function gerarBadge(nome, especialidade) {
+async function gerarBadge(nome, especialidade) {
+  // Garante que as fontes da marca estão carregadas antes de desenhar no canvas
+  try {
+    await document.fonts.load('800 90px Syne');
+    await document.fonts.load('500 44px "DM Sans"');
+    await document.fonts.ready;
+  } catch(e) {}
+
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 1080;
@@ -1938,40 +1955,68 @@ function gerarBadge(nome, especialidade) {
   ctx.fillStyle = 'rgba(232,80,10,0.08)';
   ctx.fill();
 
-  // Logo FitList
-  ctx.font = '800 72px Syne, sans-serif';
+  // Ajusta o tamanho da fonte até o texto caber na largura máxima
+  function fitFont(text, weight, family, startSize, maxWidth) {
+    let size = startSize;
+    do {
+      ctx.font = `${weight} ${size}px ${family}`;
+      if (ctx.measureText(text).width <= maxWidth) break;
+      size -= 4;
+    } while (size > 24);
+    return size;
+  }
+
+  // Logo FitList — medido, nunca sobreposto
+  ctx.textAlign = 'left';
+  ctx.font = '800 90px Syne, sans-serif';
+  const wFit  = ctx.measureText('Fit').width;
+  const wList = ctx.measureText('List').width;
+  let lx = (1080 - (wFit + wList)) / 2;
   ctx.fillStyle = '#F7F4EF';
+  ctx.fillText('Fit', lx, 200);
+  ctx.fillStyle = '#E8500A';
+  ctx.fillText('List', lx + wFit, 200);
+
   ctx.textAlign = 'center';
-  ctx.fillText('Fit', 480, 200);
-  ctx.fillStyle = '#E8500A';
-  ctx.fillText('List', 590, 200);
 
-  // Texto "SOU TREINADOR"
-  ctx.font = '600 36px DM Sans, sans-serif';
+  // Texto "SOU TREINADOR NO FITLIST"
+  ctx.font = '600 34px "DM Sans", sans-serif';
   ctx.fillStyle = '#C9B99A';
-  ctx.fillText('SOU TREINADOR NO', 540, 420);
+  ctx.fillText('SOU TREINADOR NO FITLIST', 540, 430);
 
-  // Nome
-  ctx.font = '800 80px Syne, sans-serif';
+  // Nome — auto-ajusta para nomes longos
+  const nSize = fitFont(nome, '800', 'Syne, sans-serif', 84, 940);
+  ctx.font = `800 ${nSize}px Syne, sans-serif`;
   ctx.fillStyle = '#F7F4EF';
-  const displayNome = nome.length > 20 ? nome.substring(0, 20) + '…' : nome;
-  ctx.fillText(displayNome, 540, 540);
+  ctx.fillText(nome, 540, 550);
 
-  // Especialidade
-  ctx.font = '500 44px DM Sans, sans-serif';
+  // Especialidade — auto-ajusta
+  const eSize = fitFont(especialidade, '500', '"DM Sans", sans-serif', 44, 940);
+  ctx.font = `500 ${eSize}px "DM Sans", sans-serif`;
   ctx.fillStyle = '#E8500A';
-  ctx.fillText(especialidade, 540, 620);
+  ctx.fillText(especialidade, 540, 630);
 
-  // CTA
-  ctx.font = '400 32px DM Sans, sans-serif';
-  ctx.fillStyle = '#6B6560';
-  ctx.fillText('Encontra-me em fitlist2.pages.dev', 540, 900);
+  // Linha divisória subtil
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(240, 840); ctx.lineTo(840, 840);
+  ctx.stroke();
+
+  // Link profissional do PT
+  const link = `fitlist2.pages.dev/${slugify(nome)}`;
+  const lSize = fitFont(link, '500', '"DM Sans", sans-serif', 34, 940);
+  ctx.font = `500 ${lSize}px "DM Sans", sans-serif`;
+  ctx.fillStyle = '#C9B99A';
+  ctx.fillText('Encontra-me em', 540, 905);
+  ctx.fillStyle = '#FF6B2B';
+  ctx.fillText(link, 540, 955);
 
   // Download
-  const link = document.createElement('a');
-  link.download = `fitlist-badge-${nome.replace(/\s+/g, '-').toLowerCase()}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  const a = document.createElement('a');
+  a.download = `fitlist-badge-${slugify(nome)}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
   showToast('Badge descarregado! Partilha no Instagram 📸');
 }
 
@@ -2146,6 +2191,7 @@ async function loadEditPage(token) {
     const especAtuais = Array.isArray(f['Especialidade']) ? f['Especialidade'] : (f['Especialidade'] ? [f['Especialidade']] : []);
     const zonas = ['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga','Kilamba'];
     const fotoPerfilAtual = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : null;
+    const publicUrl = window.location.origin + '/' + slugify(f['Nome'] || '');
     const galeriaAtual = f['Galeria Cloudinary'] || '';
     const galeriaUrls = galeriaAtual.split(',').filter(Boolean);
 
@@ -2228,10 +2274,10 @@ async function loadEditPage(token) {
         <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.2);border-radius:12px;padding:1.25rem;margin-top:1.75rem;">
           <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.35rem;">📣 O teu link público</div>
           <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Partilha este link com clientes no WhatsApp, na bio do Instagram e nas tuas redes. É o teu cartão de visita digital.</p>
-          <div style="background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.75rem;color:var(--sand);word-break:break-all;margin-bottom:0.75rem;">${window.location.origin}${window.location.pathname}?perfil=${record.id}</div>
+          <div style="background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.75rem;color:var(--sand);word-break:break-all;margin-bottom:0.75rem;">${publicUrl}</div>
           <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-            <button onclick="copyProfileLink('${window.location.origin}${window.location.pathname}?perfil=${record.id}')" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;cursor:pointer;">📋 Copiar link</button>
-            <a href="https://wa.me/?text=${encodeURIComponent('O meu perfil no FitList Angola 💪 ' + window.location.origin + window.location.pathname + '?perfil=' + record.id)}" target="_blank" style="background:#25D366;color:#000;border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;">Partilhar no WhatsApp</a>
+            <button onclick="copyProfileLink('${publicUrl}')" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;cursor:pointer;">📋 Copiar link</button>
+            <a href="https://wa.me/?text=${encodeURIComponent('O meu perfil no FitList Angola 💪 ' + publicUrl)}" target="_blank" style="background:#25D366;color:#000;border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;">Partilhar no WhatsApp</a>
           </div>
         </div>
 
@@ -2332,6 +2378,19 @@ if (editToken) {
   showPage('register');
 } else if (pageParam === 'encontrar') {
   showPage('encontrar');
+} else if (window.location.pathname.length > 1 && !window.location.pathname.includes('.')) {
+  // Link profissional: fitlist2.pages.dev/carlos-mbemba
+  const slug = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  (async () => {
+    try {
+      const res = await fetch('/airtable?action=list');
+      const data = await res.json();
+      allTrainers = data.records || [];
+      const index = allTrainers.findIndex(r => slugify(r.fields['Nome']) === slug);
+      if (index >= 0) openProfile(index);
+      else showPage('home');
+    } catch(e) { showPage('home'); }
+  })();
 }
 
 // Cat pills da hero — activa visual
