@@ -453,6 +453,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
         <option>Cacuaco</option>
         <option>Mutamba</option>
         <option>Maianga</option>
+          <option>Kilamba</option>
       </select>
       <button onclick="heroSearch()">Pesquisar →</button>
     </div>
@@ -480,7 +481,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     </div>
     <div class="hero-stats">
       <div class="stat"><div class="stat-n" id="stat-trainers">—</div><div class="stat-l">Treinadores</div></div>
-      <div class="stat"><div class="stat-n" id="stat-zonas">10</div><div class="stat-l">Zonas de Luanda</div></div>
+      <div class="stat"><div class="stat-n" id="stat-zonas">11</div><div class="stat-l">Zonas de Luanda</div></div>
       <div class="stat"><div class="stat-n">9<span>+</span></div><div class="stat-l">Modalidades</div></div>
     </div>
   </section>
@@ -628,6 +629,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
       <option value="Cacuaco">Cacuaco</option>
       <option value="Mutamba">Mutamba</option>
       <option value="Maianga">Maianga</option>
+      <option value="Kilamba">Kilamba</option>
     </select>
   </div>
   <div class="trainers-grid" id="trainers-grid">
@@ -699,6 +701,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
           <option>Cacuaco</option>
           <option>Mutamba</option>
           <option>Maianga</option>
+          <option>Kilamba</option>
         </select>
 
         <label>Anos de experiência</label>
@@ -885,6 +888,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
           <option>Cacuaco</option>
           <option>Mutamba</option>
           <option>Maianga</option>
+          <option>Kilamba</option>
           <option>Tenho flexibilidade</option>
         </select>
 
@@ -2140,7 +2144,7 @@ async function loadEditPage(token) {
 
     const especialidades = ['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Outra'];
     const especAtuais = Array.isArray(f['Especialidade']) ? f['Especialidade'] : (f['Especialidade'] ? [f['Especialidade']] : []);
-    const zonas = ['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga'];
+    const zonas = ['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga','Kilamba'];
     const fotoPerfilAtual = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : null;
     const galeriaAtual = f['Galeria Cloudinary'] || '';
     const galeriaUrls = galeriaAtual.split(',').filter(Boolean);
@@ -2220,6 +2224,16 @@ async function loadEditPage(token) {
 
         <label>WhatsApp</label>
         <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
+
+        <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.2);border-radius:12px;padding:1.25rem;margin-top:1.75rem;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.35rem;">📣 O teu link público</div>
+          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;line-height:1.5;">Partilha este link com clientes no WhatsApp, na bio do Instagram e nas tuas redes. É o teu cartão de visita digital.</p>
+          <div style="background:var(--mid2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.9rem;font-size:0.75rem;color:var(--sand);word-break:break-all;margin-bottom:0.75rem;">${window.location.origin}${window.location.pathname}?perfil=${record.id}</div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button onclick="copyProfileLink('${window.location.origin}${window.location.pathname}?perfil=${record.id}')" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;cursor:pointer;">📋 Copiar link</button>
+            <a href="https://wa.me/?text=${encodeURIComponent('O meu perfil no FitList Angola 💪 ' + window.location.origin + window.location.pathname + '?perfil=' + record.id)}" target="_blank" style="background:#25D366;color:#000;border-radius:8px;padding:0.55rem 1rem;font-size:0.78rem;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;">Partilhar no WhatsApp</a>
+          </div>
+        </div>
 
         <button class="save-btn" id="ef-save" onclick="saveEditProfile('${record.id}', '${token}')">💾 Guardar alterações</button>
         <p style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--muted);">As alterações ficam visíveis imediatamente no teu perfil público.</p>
