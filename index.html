@@ -820,7 +820,8 @@ footer p { font-size:0.72rem; color:var(--muted); }
       <p>Deixa os teus dados e entramos em contacto assim que abrirmos as parcerias. Os primeiros a inscrever-se têm condições especiais.</p>
       <div class="parceiros-form" id="parceiros-form">
         <input type="text" id="p-nome" placeholder="Nome da empresa / ginásio *">
-        <input type="text" id="p-contacto" placeholder="WhatsApp ou email *">
+        <input type="text" id="p-contacto" placeholder="WhatsApp *">
+        <input type="email" id="p-email" placeholder="Email">
         <select id="p-tipo">
           <option value="">Tipo de parceiro *</option>
           <option>Ginásio / Academia</option>
@@ -980,6 +981,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <a onclick="showPage('about')">Sobre</a>
   </div>
   <a href="https://wa.me/351931916420?text=Ol%C3%A1%20FitList!%20Gostava%20de%20sugerir%20uma%20nova%20categoria%3A%20" target="_blank" style="font-size:0.78rem;color:var(--muted);text-decoration:none;cursor:pointer;">💡 Sugerir categoria</a>
+  <a href="https://wa.me/351931916420?text=Ol%C3%A1%20FitList!%20Quero%20fazer%20uma%20reclama%C3%A7%C3%A3o%20sobre%3A%20" target="_blank" style="font-size:0.78rem;color:var(--muted);text-decoration:none;cursor:pointer;">⚑ Reclamações</a>
   <p>© 2026 FitList · Angola</p>
 </footer>
 
@@ -1407,6 +1409,8 @@ function openProfile(index) {
         <div class="meta-tag">📍 ${f['Zona']}, Luanda</div>
         ${f['Avaliação'] ? `<div class="meta-tag">${stars} (${f['Nº Avaliações'] || 0} avaliações)</div>` : ''}
         ${f['Verificado'] ? '<div class="meta-tag verified-tag">✅ Verificado</div>' : ''}
+        ${f['Horário'] ? `<div class="meta-tag">🕐 ${f['Horário']}</div>` : ''}
+        ${f['Ginásio'] ? `<div class="meta-tag">🏋️ ${f['Ginásio']}</div>` : ''}
         <div class="response-badge"><span class="response-dot"></span>Responde via WhatsApp</div>
       </div>
       <div class="social-proof-bar">
@@ -2014,7 +2018,7 @@ function submitParceiro() {
     return;
   }
 
-  const msg = `🤝 *Novo pedido de parceria — FitList*\n\n*Empresa:* ${nome}\n*Contacto:* ${contacto}\n*Tipo:* ${tipo}\n*Zona:* ${document.getElementById('p-zona').value || '—'}\n*Mensagem:* ${document.getElementById('p-msg').value || '—'}`;
+  const msg = `🤝 *Novo pedido de parceria — FitList*\n\n*Empresa:* ${nome}\n*Contacto:* ${contacto}\n*Email:* ${document.getElementById('p-email').value.trim() || '—'}\n*Tipo:* ${tipo}\n*Zona:* ${document.getElementById('p-zona').value || '—'}\n*Mensagem:* ${document.getElementById('p-msg').value || '—'}`;
 
   window.open(`https://wa.me/351931916420?text=${encodeURIComponent(msg)}`, '_blank');
 
@@ -2176,6 +2180,12 @@ async function loadEditPage(token) {
         <label>Anos de experiência</label>
         <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}" min="0" max="50">
 
+        <label>Horário de disponibilidade</label>
+        <input type="text" id="ef-horario" value="${f['Horário'] || ''}" placeholder="Ex: 06h-10h e 16h-20h">
+
+        <label>Ginásio(s) onde treinas</label>
+        <input type="text" id="ef-ginasio" value="${f['Ginásio'] || ''}" placeholder="Ex: Fitness Club Talatona">
+
         <label>Bio</label>
         <textarea id="ef-bio">${f['Bio'] || ''}</textarea>
 
@@ -2245,6 +2255,8 @@ async function saveEditProfile(recordId, token) {
     'Zona': document.getElementById('ef-zona').value,
     'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
     'Bio': document.getElementById('ef-bio').value.trim(),
+    'Horário': document.getElementById('ef-horario').value.trim() || null,
+    'Ginásio': document.getElementById('ef-ginasio').value.trim() || null,
     'Preço por Sessão': parsePreco(document.getElementById('ef-preco').value),
     'Preço Pack 2x/Semana': parsePreco(document.getElementById('ef-pack2').value),
     'Preço Pack 3x/Semana': parsePreco(document.getElementById('ef-pack3').value),
