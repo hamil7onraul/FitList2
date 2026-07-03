@@ -36,6 +36,17 @@ export async function onRequest(context) {
       const filter = customFilter || defaultFilter;
       const res  = await fetch(`${BASE_URL}?filterByFormula=${filter}&sort[0][field]=Nome`, { headers });
       const data = await res.json();
+      // SEGURANÇA: nunca expor publicamente o token de edição nem o email.
+      // O token dá acesso de escrita ao perfil — se fosse devolvido aqui,
+      // qualquer pessoa podia editar qualquer perfil.
+      if (data.records) {
+        data.records.forEach(r => {
+          if (r.fields) {
+            delete r.fields[TOKEN_FIELD];
+            delete r.fields['Email'];
+          }
+        });
+      }
       return respond(200, data);
     }
 
