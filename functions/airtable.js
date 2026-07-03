@@ -8,6 +8,10 @@ const PEDIDOS_URL   = `https://api.airtable.com/v0/${BASE_ID}/${PEDIDOS_ID}`;
 const PARCEIROS_URL = `https://api.airtable.com/v0/${BASE_ID}/${PARCEIROS_ID}`;
 const EVENTOS_URL   = `https://api.airtable.com/v0/${BASE_ID}/${EVENTOS_ID}`;
 
+// Nome EXACTO da coluna no Airtable que guarda o token do link mágico.
+// Se a tua coluna tiver outro nome, muda apenas esta linha.
+const TOKEN_FIELD = 'Token';
+
 export async function onRequest(context) {
   const { request, env } = context;
 
@@ -35,11 +39,34 @@ export async function onRequest(context) {
       return respond(200, data);
     }
 
+    if (action === 'get') {
+      const token = url.searchParams.get('token');
+      if (!token) return respond(400, { error: 'Token em falta' });
+      // Procura o registo cujo token corresponde — devolve no formato {records:[...]}
+      // que o site espera. Aspas removidas do token para evitar injecção na fórmula.
+      const safe   = token.replace(/["\\]/g, '');
+      const filter = encodeURIComponent(`{${TOKEN_FIELD}}="${safe}"`);
+      const res  = await fetch(`${BASE_URL}?filterByFormula=${filter}&maxRecords=1`, { headers });
+      const data = await res.json();
+      return respond(200, data);
+    }
+
     if (action === 'update') {
-      const id   = url.searchParams.get('id');
-      if (!id) return respond(400, { error: 'ID em falta' });
-      const body = await request.json();
+      const token = url.searchParams.get('token');
+      const body  = await request.json();
+      const id    = body.id || url.searchParams.get('id');
+      if (!token) return respond(403, { error: 'Token em falta' });
+      if (!id)    return respond(400, { error: 'ID em falta' });
       if (!body.fields) return respond(400, { error: 'Fields em falta' });
+
+      // SEGURANÇA: confirmar que o token pertence mesmo a este registo
+      // antes de permitir qualquer alteração.
+      const checkRes = await fetch(`${BASE_URL}/${id}`, { headers });
+      const record   = await checkRes.json();
+      if (!record.fields || record.fields[TOKEN_FIELD] !== token) {
+        return respond(403, { error: 'Token inválido para este perfil' });
+      }
+
       // Garantir que Especialidade é sempre array para Multiple Select
       if (body.fields['Especialidade'] !== undefined) {
         const e = body.fields['Especialidade'];
@@ -48,7 +75,7 @@ export async function onRequest(context) {
       const res  = await fetch(`${BASE_URL}/${id}`, {
         method: 'PATCH',
         headers,
-        body: JSON.stringify(body)
+        body: JSON.stringify({ fields: body.fields })
       });
       const data = await res.json();
       return respond(200, data);
