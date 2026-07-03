@@ -4,6 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitList — Encontra o teu Treinador em Angola</title>
+<meta name="description" content="Personal Trainers, Artes Marciais, Crossfit, Yoga e mais. Encontra os melhores profissionais de fitness em Luanda e contacta directamente via WhatsApp. Grátis.">
+
+<!-- Open Graph — preview em WhatsApp, Facebook, etc. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fitlist2.pages.dev/">
+<meta property="og:title" content="FitList — Encontra o teu Treinador em Angola">
+<meta property="og:description" content="Personal Trainers, Artes Marciais, Crossfit e Yoga em Luanda. Vê perfis, preços e contacta directamente via WhatsApp.">
+<meta property="og:image" content="https://fitlist2.pages.dev/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="pt_AO">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FitList — Encontra o teu Treinador em Angola">
+<meta name="twitter:description" content="Personal Trainers, Artes Marciais, Crossfit e Yoga em Luanda. Contacta directamente via WhatsApp.">
+<meta name="twitter:image" content="https://fitlist2.pages.dev/og-image.jpg">
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#080808">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -205,6 +229,28 @@ nav {
 .loading { grid-column:1/-1; text-align:center; padding:4rem; color:var(--muted); }
 .loading-spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--orange); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
 @keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── SKELETON SCREENS ── */
+.sk-card { background:var(--mid); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.sk { position:relative; overflow:hidden; background:var(--mid2); border-radius:6px; }
+.sk::after { content:''; position:absolute; inset:0; transform:translateX(-100%); background:linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation:shimmer 1.4s infinite; }
+@keyframes shimmer { 100% { transform:translateX(100%); } }
+.sk-img { height:220px; border-radius:0; }
+.sk-body { padding:1.2rem; display:flex; flex-direction:column; gap:0.6rem; }
+.sk-line { height:14px; }
+.sk-line.w60 { width:60%; }
+.sk-line.w40 { width:40%; }
+.sk-line.w80 { width:80%; }
+@media (prefers-reduced-motion: reduce) { .sk::after { animation:none; } }
+
+/* ── ZOOM SUBTIL NAS IMAGENS DOS CARDS ── */
+.t-card-img img, .evento-img img { transition:transform 0.45s ease; }
+.t-card:hover .t-card-img img, .evento-card:hover .evento-img img { transform:scale(1.06); }
+
+/* ── SCROLL REVEALS ── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.reveal.revealed { opacity:1; transform:translateY(0); }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
 
 /* ── PARCEIROS ── */
 .parceiros-inner { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 5rem; }
@@ -432,6 +478,11 @@ footer p { font-size:0.72rem; color:var(--muted); }
         Yoga
       </div>
     </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-n" id="stat-trainers">—</div><div class="stat-l">Treinadores</div></div>
+      <div class="stat"><div class="stat-n" id="stat-zonas">10</div><div class="stat-l">Zonas de Luanda</div></div>
+      <div class="stat"><div class="stat-n">0 <span>Kz</span></div><div class="stat-l">Custo para clientes</div></div>
+    </div>
   </section>
 
   <section class="categories-section">
@@ -502,7 +553,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2 class="section-title">Profissionais em <span style="color:var(--orange)">Destaque</span></h2>
     <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2.5rem;">Os mais procurados em Luanda pela nossa comunidade.</p>
     <div class="trainers-grid" id="featured-grid">
-      <div class="loading"><div class="loading-spinner"></div>A carregar...</div>
+      <div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div>
     </div>
     <div style="text-align:center;margin-top:2.5rem;">
       <button class="btn-outline" onclick="showPage('listings')" style="padding:0.9rem 2.5rem;font-size:0.95rem;">Ver todos os profissionais →</button>
@@ -531,7 +582,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   <section class="cta-section">
     <div class="section-label">Para profissionais</div>
     <h2>És treinador?<br>Junta-te ao <span>FitList</span></h2>
-    <p>Coloca o teu perfil em frente de centenas de clientes em Luanda. Grátis nos primeiros 3 meses.</p>
+    <p>Coloca o teu perfil em frente de centenas de clientes em Luanda. Grátis nos primeiros 6 meses.</p>
     <button class="btn-orange" onclick="showPage('register')">Criar Perfil Gratuito</button>
     <button class="btn-outline" onclick="showPage('about')">Sobre o FitList</button>
   </section>
@@ -580,7 +631,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     </select>
   </div>
   <div class="trainers-grid" id="trainers-grid">
-    <div class="loading"><div class="loading-spinner"></div>A carregar treinadores...</div>
+    <div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div>
   </div>
 </div>
 
@@ -602,7 +653,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
   <div class="register-inner">
     <button class="back-btn" onclick="showPage('home')">← Voltar</button>
     <h2>Junta-te ao<br><span>FitList</span></h2>
-    <p class="sub">Os primeiros 3 meses são completamente grátis. Preenche o formulário e entraremos em contacto via WhatsApp em 24h.</p>
+    <p class="sub">Os primeiros 6 meses são completamente grátis. Preenche o formulário e entraremos em contacto via WhatsApp em 24h.</p>
 
     <!-- Barra de progresso -->
     <div style="margin-bottom:2rem;">
@@ -680,7 +731,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
         </select>
 
         <div style="background:rgba(232,80,10,0.06);border:1px solid rgba(232,80,10,0.15);border-radius:10px;padding:1.25rem;margin-top:1rem;font-size:0.82rem;color:var(--muted);line-height:1.8;">
-          ✅ <strong style="color:var(--white)">Grátis nos primeiros 3 meses</strong><br>
+          ✅ <strong style="color:var(--white)">Grátis nos primeiros 6 meses</strong><br>
           📋 Após aprovação recebes um <strong style="color:var(--white)">link pessoal</strong> para gerir o teu perfil — adicionar fotos, vídeo de apresentação, definir preços e muito mais.<br>
           ⏱️ Analisaremos o teu perfil e entraremos em contacto via WhatsApp em menos de 24h.
         </div>
@@ -891,7 +942,7 @@ footer p { font-size:0.72rem; color:var(--muted); }
     <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;margin-bottom:0.5rem;">Eventos em <span style="color:var(--orange)">Luanda</span></h2>
     <p style="color:var(--muted);font-size:0.9rem;margin-bottom:2rem;">Corridas, competições, bootcamps e muito mais.</p>
     <div id="eventos-grid" class="eventos-grid">
-      <div class="loading"><div class="loading-spinner"></div>A carregar eventos...</div>
+      <div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div><div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div>
     </div>
     <div style="text-align:center;margin-top:3rem;padding:2rem;background:var(--mid);border:1px solid var(--border);border-radius:16px;">
       <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1rem;">Tens um evento para divulgar?</p>
@@ -1038,6 +1089,17 @@ function limitarEspec(checkbox) {
   }
 }
 
+// ── INICIAIS PARA PLACEHOLDER ──
+// Quando o treinador não tem foto, mostra as iniciais do nome
+// sobre o gradiente (ex: "Carlos Mbemba" → "CM")
+function getInitials(nome) {
+  if (!nome) return 'FL';
+  const parts = String(nome).trim().split(/\s+/);
+  const first = parts[0]?.[0] || '';
+  const last  = parts.length > 1 ? parts[parts.length-1][0] : '';
+  return (first + last).toUpperCase() || 'FL';
+}
+
 // ── HELPERS ESPECIALIDADE ──
 function getEspecPrimaria(f) {
   const e = f['Especialidade'];
@@ -1125,6 +1187,32 @@ function goFilter(cat) {
   showPage('listings');
 }
 
+// ── CONTADOR ANIMADO ──
+// O número de treinadores sobe de 0 até ao valor real
+let _lastTrainerCount = -1;
+function setTrainerCount(count) {
+  const el = document.getElementById('stat-trainers');
+  if (!el || count === _lastTrainerCount) return;
+  _lastTrainerCount = count;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced || count <= 0) { el.innerHTML = count + '<span>+</span>'; return; }
+  const dur = 900, start = performance.now();
+  function tick(now) {
+    const p = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3); // ease-out
+    el.innerHTML = Math.round(eased * count) + '<span>+</span>';
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ── SKELETON SCREENS ──
+// Cards "fantasma" enquanto os dados carregam — o site parece mais rápido
+function renderSkeletons(n) {
+  const card = '<div class="sk-card"><div class="sk sk-img"></div><div class="sk-body"><div class="sk sk-line w60"></div><div class="sk sk-line w40"></div><div class="sk sk-line w80"></div></div></div>';
+  return card.repeat(n);
+}
+
 // ── CARREGAR DESTAQUES NA HOME ──
 async function loadFeatured() {
   const grid = document.getElementById('featured-grid');
@@ -1137,10 +1225,11 @@ async function loadFeatured() {
     if (featured.length === 0) { grid.innerHTML = ''; return; }
     // Temporariamente adiciona ao allTrainers se ainda não carregou
     if (allTrainers.length === 0) allTrainers = data.records || [];
+    setTrainerCount((data.records || []).length);
     grid.innerHTML = featured.map((record) => {
       const f = record.fields;
       const globalIndex = allTrainers.findIndex(r => r.id === record.id);
-      const emoji = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
+      const emoji = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.6rem;color:rgba(247,244,239,0.85);letter-spacing:-0.02em;">${getInitials(f['Nome'])}</div>`;
       const cls = getEspecCls(f);
       const price = toPrice(f['Preço por Sessão']);
       const badge = f['Verificado'] ? '<div class="card-badge badge-verified">✓ Verificado</div>' : '';
@@ -1171,7 +1260,7 @@ async function loadFeatured() {
 // Usa a Shared View pública — sem necessidade de token
 async function loadTrainers() {
   const grid = document.getElementById('trainers-grid');
-  grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>A carregar treinadores...</div>';
+  grid.innerHTML = renderSkeletons(6);
 
   try {
     // Construir URL com filtro — só treinadores aprovados
@@ -1187,9 +1276,7 @@ async function loadTrainers() {
     allTrainers = data.records || [];
 
     // Actualiza o contador na página inicial
-    const count = allTrainers.length;
-    const statEl = document.getElementById('stat-trainers');
-    if (statEl) statEl.innerHTML = count + '<span>+</span>';
+    setTrainerCount(allTrainers.length);
 
     renderTrainers(activeFilter);
 
@@ -1214,8 +1301,7 @@ function loadFallbackData() {
     { id:'7', fields:{ Nome:'Miguel Santos', Especialidade:'Personal Trainer', Zona:'Miramar', WhatsApp:'+244923000007', 'Preço por Sessão':11000, Bio:'Especialista em corrida e maratonas. Trabalhei com a selecção angolana de atletismo.', 'Anos Experiência':10, Avaliação:5.0, 'Nº Avaliações':23, Verificado:true, Estado:'Aprovado' }},
     { id:'8', fields:{ Nome:'Esperança Lima', Especialidade:'Capoeira', Zona:'Rangel', WhatsApp:'+244923000008', 'Preço por Sessão':8500, Bio:'Mestra de Capoeira Angola com 15 anos de prática. Aulas para crianças e adultos.', 'Anos Experiência':15, Avaliação:4.3, 'Nº Avaliações':11, Verificado:false, Estado:'Aprovado' }},
   ];
-  const statEl = document.getElementById('stat-trainers');
-  if (statEl) statEl.innerHTML = allTrainers.length + '<span>+</span>';
+  setTrainerCount(allTrainers.length);
   renderTrainers(activeFilter);
 }
 
@@ -1262,7 +1348,7 @@ function renderTrainers(filterCat) {
   // join('') une todos os blocos numa só string
   grid.innerHTML = list.map((record, index) => {
     const f       = record.fields;
-    const emoji   = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
+    const emoji   = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.6rem;color:rgba(247,244,239,0.85);letter-spacing:-0.02em;">${getInitials(f['Nome'])}</div>`;
     const cls     = getEspecCls(f);
     const stars   = toStars(f['Avaliação']);
     const price   = toPrice(f['Preço por Sessão']);
@@ -1303,7 +1389,7 @@ function openProfile(index) {
   if (!record) return;
   const f = record.fields;
 
-  const emoji  = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.5rem;color:var(--orange);letter-spacing:-0.05em;">FL</div>`;
+  const emoji  = `<div style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.8rem;color:rgba(247,244,239,0.85);letter-spacing:-0.02em;">${getInitials(f['Nome'])}</div>`;
   const cls    = getEspecCls(f);
   const stars  = toStars(f['Avaliação']);
   const price  = toPrice(f['Preço por Sessão']);
@@ -1824,139 +1910,78 @@ async function loadEventos() {
   }
 }
 
-// ── BADGE PARA REDES SOCIAIS ──
-async function gerarBadge(nome, especialidade, fotoUrl) {
-  const canvas = document.getElementById('badge-canvas');
-  const W = 1080, H = 1080;
-  canvas.width = W;
-  canvas.height = H;
+// ── GERAR BADGE DE TREINADOR ──
+function gerarBadge(nome, especialidade) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1080;
   const ctx = canvas.getContext('2d');
 
-  // Fundo escuro
-  ctx.fillStyle = '#0A0909';
-  ctx.fillRect(0, 0, W, H);
+  // Fundo
+  const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+  grad.addColorStop(0, '#080808');
+  grad.addColorStop(1, '#1a1008');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 1080);
 
-  // Faixa laranja topo
-  ctx.fillStyle = '#E8500A';
-  ctx.fillRect(0, 0, W, 10);
-
-  // Faixa laranja fundo
-  ctx.fillRect(0, H - 10, W, 10);
-
-  // Círculo fundo para foto
-  const cx = W / 2, cy = 390, r = 200;
-  ctx.save();
+  // Círculo decorativo
   ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.fillStyle = '#1E1C1B';
+  ctx.arc(900, 150, 300, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(232,80,10,0.08)';
   ctx.fill();
-  ctx.strokeStyle = '#E8500A';
-  ctx.lineWidth = 8;
-  ctx.stroke();
-  ctx.clip();
-
-  // Foto de perfil
-  if (fotoUrl) {
-    try {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((res, rej) => {
-        img.onload = res;
-        img.onerror = rej;
-        img.src = fotoUrl;
-      });
-      ctx.drawImage(img, cx - r, cy - r, r * 2, r * 2);
-    } catch {
-      // fallback: iniciais
-      ctx.restore();
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.fillStyle = '#1E1C1B';
-      ctx.fill();
-      ctx.fillStyle = '#E8500A';
-      ctx.font = 'bold 120px Syne, Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const iniciais = nome.split(' ').map(n => n[0]).slice(0, 2).join('');
-      ctx.fillText(iniciais, cx, cy);
-    }
-  } else {
-    ctx.restore();
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.clip();
-    ctx.fillStyle = '#E8500A';
-    ctx.font = 'bold 120px Syne, Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const iniciais = nome.split(' ').map(n => n[0]).slice(0, 2).join('');
-    ctx.fillText(iniciais, cx, cy);
-  }
-  ctx.restore();
-
-  // Nome
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 64px Syne, Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillText(nome, cx, 660);
-
-  // Especialidade
-  ctx.fillStyle = '#E8500A';
-  ctx.font = '400 36px DM Sans, Arial';
-  ctx.fillText(especialidade, cx, 715);
-
-  // Linha separadora
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(200, 760);
-  ctx.lineTo(880, 760);
-  ctx.stroke();
-
-  // Texto "Treinador na plataforma"
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '400 28px DM Sans, Arial';
-  ctx.fillText('Treinador na Plataforma', cx, 820);
 
   // Logo FitList
-  ctx.fillStyle = '#FFFFFF';
-  ctx.font = 'bold 72px Syne, Arial';
+  ctx.font = '800 72px Syne, sans-serif';
+  ctx.fillStyle = '#F7F4EF';
   ctx.textAlign = 'center';
-  const fitW = ctx.measureText('Fit').width;
-  const listW = ctx.measureText('List').width;
-  const totalW = fitW + listW;
-  ctx.fillText('Fit', cx - listW / 2, 920);
+  ctx.fillText('Fit', 480, 200);
   ctx.fillStyle = '#E8500A';
-  ctx.fillText('List', cx + fitW / 2, 920);
+  ctx.fillText('List', 590, 200);
 
-  // URL
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = '400 22px DM Sans, Arial';
-  ctx.fillText('fitlist2.pages.dev', cx, 970);
+  // Texto "SOU TREINADOR"
+  ctx.font = '600 36px DM Sans, sans-serif';
+  ctx.fillStyle = '#C9B99A';
+  ctx.fillText('SOU TREINADOR NO', 540, 420);
+
+  // Nome
+  ctx.font = '800 80px Syne, sans-serif';
+  ctx.fillStyle = '#F7F4EF';
+  const displayNome = nome.length > 20 ? nome.substring(0, 20) + '…' : nome;
+  ctx.fillText(displayNome, 540, 540);
+
+  // Especialidade
+  ctx.font = '500 44px DM Sans, sans-serif';
+  ctx.fillStyle = '#E8500A';
+  ctx.fillText(especialidade, 540, 620);
+
+  // CTA
+  ctx.font = '400 32px DM Sans, sans-serif';
+  ctx.fillStyle = '#6B6560';
+  ctx.fillText('Encontra-me em fitlist2.pages.dev', 540, 900);
 
   // Download
   const link = document.createElement('a');
-  link.download = `fitlist_badge_${nome.replace(/\s+/g, '_').toLowerCase()}.png`;
+  link.download = `fitlist-badge-${nome.replace(/\s+/g, '-').toLowerCase()}.png`;
   link.href = canvas.toDataURL('image/png');
   link.click();
-  showToast('Badge descarregado! Partilha nas tuas redes 🎉');
+  showToast('Badge descarregado! Partilha no Instagram 📸');
 }
 
-// ── TOGGLE OUTRO OBJECTIVO ──
+// ── TOGGLE OUTRO OBJETIVO ──
 function toggleOutroObjetivo(val) {
   const container = document.getElementById('enc-objetivo-outro-container');
   if (container) container.style.display = val === 'Outro' ? 'block' : 'none';
 }
 
-// ── SUBMETER PEDIDO DE TREINADOR ──
+// ── SUBMETER ENCONTRAR TREINADOR ──
 async function submitEncontrar() {
   const nome = document.getElementById('enc-nome').value.trim();
   const whatsapp = document.getElementById('enc-whatsapp').value.trim();
-  const objetivo = document.getElementById('enc-objetivo').value;
+  let objetivo = document.getElementById('enc-objetivo').value;
+  if (objetivo === 'Outro') {
+    const outro = document.getElementById('enc-objetivo-outro').value.trim();
+    if (outro) objetivo = 'Outro: ' + outro;
+  }
   const zona = document.getElementById('enc-zona').value;
 
   if (!nome || !whatsapp || !objetivo || !zona) {
@@ -1968,493 +1993,352 @@ async function submitEncontrar() {
   btn.disabled = true;
   btn.textContent = 'A enviar...';
 
-  try {
-    const res = await fetch('/airtable?action=pedido', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        'Nome': nome,
-        'WhatsApp': whatsapp,
-        'Objetivo': objetivo === 'Outro' ? (document.getElementById('enc-objetivo-outro').value.trim() || 'Outro') : objetivo,
-        'Zona': zona,
-        'Frequência': document.getElementById('enc-frequencia').value || null,
-        'Modalidade': document.getElementById('enc-modalidade').value || null,
-        'Preferência Género': document.getElementById('enc-genero').value || null,
-        'Estado': 'Novo',
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    document.getElementById('encontrar-form-container').style.display = 'none';
-    document.getElementById('encontrar-success').style.display = 'block';
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '🎯 Encontrar o meu treinador';
-    showToast('Erro: ' + (e.message || 'Tenta novamente'));
-  }
+  const msg = `🎯 *Novo pedido — Encontrar Treinador*\n\n*Nome:* ${nome}\n*WhatsApp:* ${whatsapp}\n*Objectivo:* ${objetivo}\n*Zona:* ${zona}\n*Frequência:* ${document.getElementById('enc-frequencia').value || '—'}\n*Modalidade:* ${document.getElementById('enc-modalidade').value || '—'}\n*Preferência género:* ${document.getElementById('enc-genero').value || 'Tanto faz'}`;
+
+  window.open(`https://wa.me/351931916420?text=${encodeURIComponent(msg)}`, '_blank');
+
+  document.getElementById('encontrar-form-container').style.display = 'none';
+  document.getElementById('encontrar-success').style.display = 'block';
+  btn.disabled = false;
+  btn.textContent = '🎯 Encontrar o meu treinador';
 }
 
-// ── PARCEIROS ──
-async function submitParceiro() {
+// ── SUBMETER PARCEIRO ──
+function submitParceiro() {
   const nome = document.getElementById('p-nome').value.trim();
   const contacto = document.getElementById('p-contacto').value.trim();
   const tipo = document.getElementById('p-tipo').value;
-  const zona = document.getElementById('p-zona').value.trim();
-  const msg = document.getElementById('p-msg').value.trim();
 
   if (!nome || !contacto || !tipo) {
     showToast('Preenche os campos obrigatórios (*)');
     return;
   }
 
-  const btn = document.querySelector('.parceiros-submit');
-  btn.disabled = true;
-  btn.textContent = 'A enviar...';
+  const msg = `🤝 *Novo pedido de parceria — FitList*\n\n*Empresa:* ${nome}\n*Contacto:* ${contacto}\n*Tipo:* ${tipo}\n*Zona:* ${document.getElementById('p-zona').value || '—'}\n*Mensagem:* ${document.getElementById('p-msg').value || '—'}`;
 
-  try {
-    const res = await fetch('/airtable?action=parceiro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        'Nome Empresa': nome,
-        'Tipo': tipo,
-        'Contacto': contacto,
-        'Zona': zona || null,
-        'Mensagem': msg || null,
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    document.getElementById('parceiros-form').style.display = 'none';
-    document.getElementById('parceiros-success').style.display = 'block';
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '📩 Quero ser parceiro';
-    showToast('Erro ao enviar. Tenta novamente.');
-  }
+  window.open(`https://wa.me/351931916420?text=${encodeURIComponent(msg)}`, '_blank');
+
+  document.getElementById('parceiros-form').style.display = 'none';
+  document.getElementById('parceiros-success').style.display = 'block';
 }
 
-// ── RETIRAR FOTO PERFIL ──
+// ── REMOVER FOTO DE PERFIL ──
 function removeFotoPerfil() {
-  document.getElementById('ef-foto-removed').value = 'true';
-  const container = document.getElementById('foto-preview-container');
-  container.innerHTML = `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>`;
+  const input = document.getElementById('ef-foto-perfil-url');
+  if (input) input.value = 'REMOVED';
+  const preview = document.getElementById('ef-foto-perfil-preview');
+  if (preview) preview.innerHTML = '<div style="width:100px;height:100px;border-radius:16px;background:var(--mid2);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.7rem;">Sem foto</div>';
   showToast('Foto removida. Clica em Guardar para confirmar.');
 }
 
 // ── GERAR THUMBNAIL DE VÍDEO ──
-function generateVideoThumb(video) {
-  video.currentTime = 1;
-  video.addEventListener('seeked', function onSeeked() {
-    video.removeEventListener('seeked', onSeeked);
+function generateVideoThumb(videoEl, callback) {
+  videoEl.addEventListener('loadeddata', () => {
+    videoEl.currentTime = Math.min(1, videoEl.duration / 2);
+  }, { once: true });
+  videoEl.addEventListener('seeked', () => {
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth || 200;
-    canvas.height = video.videoHeight || 200;
-    canvas.getContext('2d').drawImage(video, 0, 0);
-    const img = document.createElement('img');
-    img.src = canvas.toDataURL('image/jpeg');
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-    const parent = video.parentElement;
-    const removeBtn = parent.querySelector('.remove-btn');
-    parent.innerHTML = '';
-    parent.appendChild(img);
-    if (removeBtn) parent.appendChild(removeBtn);
-  });
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+    canvas.getContext('2d').drawImage(videoEl, 0, 0);
+    callback(canvas.toDataURL('image/jpeg', 0.7));
+  }, { once: true });
 }
 
 // ── PREVIEW FOTO PERFIL ──
-function previewFotoPerfil(input) {
-  if (!input.files.length) return;
-  const url = URL.createObjectURL(input.files[0]);
-  const container = document.getElementById('foto-preview-container');
-  container.innerHTML = `<img id="foto-preview-img" src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
+async function previewFotoPerfil(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('ef-foto-perfil-preview');
+  preview.innerHTML = '<div style="width:100px;height:100px;border-radius:16px;background:var(--mid2);display:flex;align-items:center;justify-content:center;color:var(--orange);font-size:0.7rem;">A enviar... 0%</div>';
+  try {
+    const compressed = await compressImage(file, 800);
+    const url = await uploadToCloudinary(compressed, pct => {
+      preview.querySelector('div').textContent = `A enviar... ${pct}%`;
+    });
+    document.getElementById('ef-foto-perfil-url').value = url;
+    preview.innerHTML = `<img src="${url}" style="width:100px;height:100px;border-radius:16px;object-fit:cover;">`;
+    showToast('Foto carregada! Clica em Guardar para confirmar.');
+  } catch(e) {
+    preview.innerHTML = '<div style="width:100px;height:100px;border-radius:16px;background:var(--mid2);display:flex;align-items:center;justify-content:center;color:#ff5555;font-size:0.7rem;">Erro</div>';
+    showToast('Erro no upload. Tenta novamente.');
+  }
 }
 
 // ── PREVIEW GALERIA ──
-function previewGallery(input) {
-  const preview = document.getElementById('gallery-preview');
-  preview.innerHTML = '';
-  const files = Array.from(input.files).slice(0, 9);
-  files.forEach((file) => {
-    const div = document.createElement('div');
-    div.className = 'upload-preview-item';
-    const isVideo = file.type.startsWith('video');
-    if (isVideo) {
-      const objUrl = URL.createObjectURL(file);
-      const img = document.createElement('img');
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      // Usa vídeo oculto para capturar frame
-      const vid = document.createElement('video');
-      vid.src = objUrl;
-      vid.muted = true;
-      vid.playsInline = true;
-      vid.preload = 'auto';
-      vid.style.display = 'none';
-      // Enquanto carrega mostra ícone
-      img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23333" width="100" height="100"/><text y="55" x="50" text-anchor="middle" font-size="40">🎥</text></svg>';
-      vid.addEventListener('loadeddata', () => {
-        vid.currentTime = 0.5;
-      });
-      vid.addEventListener('seeked', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = vid.videoWidth;
-        canvas.height = vid.videoHeight;
-        canvas.getContext('2d').drawImage(vid, 0, 0);
-        img.src = canvas.toDataURL('image/jpeg', 0.8);
-        URL.revokeObjectURL(objUrl);
-      });
-      document.body.appendChild(vid); // precisa estar no DOM
-      div.appendChild(img);
-      setTimeout(() => document.body.removeChild(vid), 5000);
-    } else {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-      div.appendChild(img);
+async function previewGallery(input) {
+  const files = Array.from(input.files);
+  if (files.length === 0) return;
+  const existing = document.getElementById('ef-galeria-existing').value.split(',').filter(Boolean);
+  const maxNew = 6 - existing.length;
+  if (files.length > maxNew) {
+    showToast(`Só podes adicionar mais ${maxNew} ficheiro(s).`);
+    return;
+  }
+  const previewGrid = document.getElementById('ef-gallery-preview');
+  for (const file of files) {
+    if (file.size > 50 * 1024 * 1024) {
+      showToast(`${file.name} é demasiado grande (máx 50MB).`);
+      continue;
     }
-    preview.appendChild(div);
-  });
+    const item = document.createElement('div');
+    item.className = 'upload-preview-item';
+    item.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--orange);font-size:0.7rem;">0%</div>';
+    previewGrid.appendChild(item);
+    try {
+      const compressed = await compressImage(file);
+      const url = await uploadToCloudinary(compressed, pct => {
+        const d = item.querySelector('div');
+        if (d) d.textContent = `${pct}%`;
+      });
+      const urls = document.getElementById('ef-galeria-existing').value.split(',').filter(Boolean);
+      urls.push(url);
+      document.getElementById('ef-galeria-existing').value = urls.join(',');
+      if (file.type.startsWith('video')) {
+        item.innerHTML = `<video src="${url}" muted></video><button class="remove-btn" onclick="this.parentElement.remove();removeUrlFromGaleria('${url}')">✕</button>`;
+      } else {
+        item.innerHTML = `<img src="${url}"><button class="remove-btn" onclick="this.parentElement.remove();removeUrlFromGaleria('${url}')">✕</button>`;
+      }
+    } catch(e) {
+      item.remove();
+      showToast(`Erro ao enviar ${file.name}.`);
+    }
+  }
+  input.value = '';
 }
 
-// ── LINK MÁGICO — PÁGINA DE EDIÇÃO ──
-// Carrega os dados do PT pelo token e mostra formulário de edição
+function removeUrlFromGaleria(url) {
+  const existing = document.getElementById('ef-galeria-existing');
+  const urls = existing.value.split(',').filter(u => u && u !== url);
+  existing.value = urls.join(',');
+}
+
+// ── PÁGINA DE EDIÇÃO (link mágico) ──
 async function loadEditPage(token) {
+  showPage('edit');
   const container = document.getElementById('edit-form-container');
   const sub = document.getElementById('edit-sub');
+  container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>A carregar o teu perfil...</div>';
 
   try {
-    // Procura o treinador com este token no Airtable
-    const filter = encodeURIComponent(`{Token}="${token}"`);
-    const res = await fetch(`/airtable?action=list&filter=${filter}`);
+    const res = await fetch(`/airtable?action=get&token=${encodeURIComponent(token)}`);
+    if (!res.ok) throw new Error();
     const data = await res.json();
-    const records = data.records || [];
-
-    // Se não encontrar nenhum registo com este token
-    if (records.length === 0) {
+    if (!data.records || data.records.length === 0) {
       sub.textContent = '';
-      container.innerHTML = `
-        <div class="token-error">
-          <h3>Link inválido ou expirado</h3>
-          <p>Este link de edição não é válido. Contacta o FitList via WhatsApp para obteres um novo link.</p>
-        </div>`;
+      container.innerHTML = `<div class="token-error"><h3>Link inválido ou expirado</h3><p>Este link de edição não é válido. Contacta-nos via WhatsApp se precisares de um novo link.</p></div>`;
       return;
     }
 
-    const record = records[0];
+    const record = data.records[0];
     const f = record.fields;
-    const primeiroNome = f['Nome'] ? f['Nome'].split(' ')[0] : '';
-    sub.innerHTML = `
-      <div style="background:rgba(232,80,10,0.08);border:1px solid rgba(232,80,10,0.2);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:0.88rem;line-height:1.6;">
-        👋 Olá <strong>${primeiroNome}</strong>! O teu perfil no FitList está aprovado e já aparece online.<br>
-        Preenche os campos abaixo para ficares com um perfil completo — quanto mais informação, mais clientes atrais.
-      </div>`;
+    sub.textContent = `Olá, ${f['Nome']?.split(' ')[0] || 'Treinador'}! Edita os teus dados abaixo e clica em Guardar.`;
 
-    // Constrói o formulário com os dados actuais já preenchidos
-    const fotoActual = f['Foto']?.[0]?.url;
-    const galeriaCloudinaryEdit = f['Galeria Cloudinary'] ? f['Galeria Cloudinary'].split(',').map(url => ({ url: url.trim(), type: url.includes('.mp4') || url.includes('/video/') ? 'video/mp4' : 'image/jpeg' })) : [];
-    const galeria = [...(f['Foto'] || []), ...galeriaCloudinaryEdit];
+    const especialidades = ['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Outra'];
+    const especAtuais = Array.isArray(f['Especialidade']) ? f['Especialidade'] : (f['Especialidade'] ? [f['Especialidade']] : []);
+    const zonas = ['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga'];
+    const fotoPerfilAtual = (f['Foto Perfil'] && f['Foto Perfil'] !== 'REMOVED') ? f['Foto Perfil'] : null;
+    const galeriaAtual = f['Galeria Cloudinary'] || '';
+    const galeriaUrls = galeriaAtual.split(',').filter(Boolean);
+
     container.innerHTML = `
       <div class="edit-form">
-
         <label>Foto de perfil</label>
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
-          <div id="foto-preview-container" style="width:80px;height:80px;border-radius:12px;overflow:hidden;background:var(--mid2);flex-shrink:0;cursor:pointer;" onclick="document.getElementById('ef-foto').click()">
-            ${(f['Foto Perfil'] || fotoActual)
-              ? `<img id="foto-preview-img" src="${f['Foto Perfil'] || fotoActual}" style="width:100%;height:100%;object-fit:cover;">`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;">👤</div>`
-            }
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+          <div id="ef-foto-perfil-preview">
+            ${fotoPerfilAtual
+              ? `<img src="${fotoPerfilAtual}" style="width:100px;height:100px;border-radius:16px;object-fit:cover;">`
+              : '<div style="width:100px;height:100px;border-radius:16px;background:var(--mid2);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:0.7rem;">Sem foto</div>'}
           </div>
-          <div style="display:flex;flex-direction:column;gap:0.4rem;">
-            <button type="button" onclick="document.getElementById('ef-foto').click()" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">
-              ${(f['Foto Perfil'] || fotoActual) ? '📷 Alterar foto' : '📷 Adicionar foto'}
-            </button>
-            ${(f['Foto Perfil'] || fotoActual) ? `
-            <button type="button" onclick="removeFotoPerfil()" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">
-              🗑️ Retirar foto
-            </button>` : ''}
-            <p style="font-size:0.68rem;color:var(--muted);">JPG ou PNG. Máximo 5MB.</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <button onclick="document.getElementById('ef-foto-perfil-input').click()" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">📷 Mudar foto</button>
+            ${fotoPerfilAtual ? '<button onclick="removeFotoPerfil()" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:0.5rem 1rem;font-size:0.8rem;cursor:pointer;">Remover</button>' : ''}
           </div>
         </div>
-        <input type="hidden" id="ef-foto-removed" value="false">
-        <input type="file" id="ef-foto" accept="image/*" style="display:none;" onchange="previewFotoPerfil(this)">
+        <input type="file" id="ef-foto-perfil-input" accept="image/*" style="display:none;" onchange="previewFotoPerfil(this)">
+        <input type="hidden" id="ef-foto-perfil-url" value="${fotoPerfilAtual || ''}">
 
         <label>Nome completo</label>
         <input type="text" id="ef-nome" value="${f['Nome'] || ''}">
 
-        <label>Email</label>
-        <input type="email" id="ef-email" value="${f['Email'] || ''}">
+        <label>Especialidades <span style="font-size:0.72rem;color:var(--muted);font-weight:400;text-transform:none;">(máx. 5)</span></label>
+        <div id="ef-especialidades">
+          ${especialidades.map(esp => `
+            <label style="text-transform:none;letter-spacing:0;"><input type="checkbox" name="ef-espec" value="${esp}" ${especAtuais.includes(esp) ? 'checked' : ''} onchange="limitarEspec(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;"> ${esp}</label>
+          `).join('')}
+        </div>
 
-        <label>WhatsApp (com indicativo ex: +244923000000)</label>
-        <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
+        <label>Zona</label>
+        <select id="ef-zona">
+          ${zonas.map(z => `<option ${f['Zona'] === z ? 'selected' : ''}>${z}</option>`).join('')}
+        </select>
 
-        <label>Especialidade <span style="font-size:0.72rem;color:var(--muted);font-weight:400;">(máx. 5)</span></label>
-        <div id="ef-especialidades" >
-          ${['Personal Trainer','Treino Funcional','Boxe','Judo','MMA','Muay Thai','Crossfit','Yoga / Pilates','Karaté','Outra'].map(e => {
-            const selected = Array.isArray(f['Especialidade'])
-              ? f['Especialidade'].includes(e)
-              : f['Especialidade'] === e;
-            return `<label >
-              <input type="checkbox" name="ef-espec" value="${e}" ${selected?'checked':''} onchange="limitarEspec(this)" style="accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;">
-              ${e}
-            </label>`;
+        <label>Anos de experiência</label>
+        <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}" min="0" max="50">
+
+        <label>Bio</label>
+        <textarea id="ef-bio">${f['Bio'] || ''}</textarea>
+
+        <label>Preço por Sessão (Kz)</label>
+        <input type="text" id="ef-preco" value="${f['Preço por Sessão'] || ''}" placeholder="Ex: 15000 ou Consultar">
+
+        <label>Preço Pack 2x/Semana (Kz)</label>
+        <input type="text" id="ef-pack2" value="${f['Preço Pack 2x/Semana'] || ''}" placeholder="Ex: 100000">
+
+        <label>Preço Pack 3x/Semana (Kz)</label>
+        <input type="text" id="ef-pack3" value="${f['Preço Pack 3x/Semana'] || ''}" placeholder="Ex: 140000">
+
+        <label>Preço Consulta Online (Kz)</label>
+        <input type="text" id="ef-consulta" value="${f['Preço Consulta Online'] || ''}" placeholder="Ex: 8000">
+
+        <label>Fotos & Vídeos <span style="font-size:0.72rem;color:var(--muted);font-weight:400;text-transform:none;">(máx. 6 — fotos e vídeos até 50MB)</span></label>
+        <div class="upload-area" onclick="document.getElementById('ef-gallery-input').click()">
+          📸 Clica para adicionar fotos ou vídeos<br>
+          <span style="font-size:0.72rem;">Mostra o teu trabalho — treinos, resultados, espaço</span>
+        </div>
+        <input type="file" id="ef-gallery-input" accept="image/*,video/*" multiple style="display:none;" onchange="previewGallery(this)">
+        <input type="hidden" id="ef-galeria-existing" value="${galeriaAtual}">
+        <div class="upload-preview" id="ef-gallery-preview">
+          ${galeriaUrls.map((url, i) => {
+            const isVideo = url.includes('.mp4') || url.includes('/video/');
+            return `<div class="upload-preview-item" id="gallery-item-${i}">
+              ${isVideo ? `<video src="${url}" muted></video>` : `<img src="${url}">`}
+              <button class="remove-btn" onclick="removeGalleryItem(${i}, '${url}')">✕</button>
+            </div>`;
           }).join('')}
         </div>
 
-        <label>Género</label>
-        <select id="ef-genero">
-          <option value="">Prefiro não indicar</option>
-          <option value="Masculino" ${f['Género']==='Masculino'?'selected':''}>Masculino</option>
-          <option value="Feminino" ${f['Género']==='Feminino'?'selected':''}>Feminino</option>
-        </select>
+        <label>WhatsApp</label>
+        <input type="text" id="ef-whatsapp" value="${f['WhatsApp'] || ''}">
 
-        <label>Zona em Luanda</label>
-        <select id="ef-zona">
-          ${['Talatona','Miramar','Alvalade','Viana','Benfica','Rangel','Luanda Sul','Cacuaco','Mutamba','Maianga'].map(z =>
-            `<option ${f['Zona']===z?'selected':''}>${z}</option>`
-          ).join('')}
-        </select>
+        <button class="save-btn" id="ef-save" onclick="saveEditProfile('${record.id}', '${token}')">💾 Guardar alterações</button>
+        <p style="text-align:center;margin-top:1rem;font-size:0.75rem;color:var(--muted);">As alterações ficam visíveis imediatamente no teu perfil público.</p>
 
-        <label>Preço por sessão (Kz) — escreve um número ou "Sob Consulta"</label>
-        <input type="text" id="ef-preco" value="${f['Preço por Sessão'] || ''}">
-
-        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
-          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">💡 Preenche apenas os packs que ofereces. Deixa em branco os que não tens.</p>
-          ${[1,2,3,4,5,6,7].map(n => `
-            <label>Pack ${n}x/Semana — ${n} sess${n===1?'ão':'ões'} por semana (Kz ou "Sob Consulta")</label>
-            <input type="text" id="ef-pack${n}" value="${f[`Preço Pack ${n}x/Semana`] || ''}">
-          `).join('')}
-          <label>Consulta Online — Avaliação e plano de treino (Kz ou "Sob Consulta")</label>
-          <input type="text" id="ef-consulta" value="${f['Preço Consulta Online'] || ''}">
+        <div style="border-top:1px solid var(--border);margin-top:2rem;padding-top:1.5rem;text-align:center;">
+          <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.75rem;">Divulga o teu perfil nas redes sociais</p>
+          <button onclick="gerarBadge('${(f['Nome'] || '').replace(/'/g, "\\'")}', '${getEspecDisplay(f).replace(/'/g, "\\'")}')" style="background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:10px;padding:0.7rem 1.5rem;font-size:0.85rem;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;">🎨 Gerar badge para Instagram</button>
         </div>
-
-        <label>Anos de experiência</label>
-        <input type="number" id="ef-exp" value="${f['Anos Experiência'] || ''}">
-
-        <label>Sobre ti (Bio)</label>
-        <textarea id="ef-bio">${f['Bio'] || ''}</textarea>
-
-        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
-          <label style="margin-bottom:0.5rem;">📸 Galeria de Fotos & Vídeos</label>
-          <p style="font-size:0.75rem;color:var(--muted);margin-bottom:1rem;">Adiciona fotos e vídeos do teu trabalho. Máximo 9 ficheiros. JPG, PNG, MP4.</p>
-          ${galeria.length > 0 ? `
-            <input type="hidden" id="ef-galeria-existing" value="${galeriaCloudinaryEdit.map(i => i.url).join(',')}">
-            <div class="upload-preview" id="current-gallery">
-              ${galeriaCloudinaryEdit.map((item, i) => {
-                const isVideo = item.type && item.type.startsWith('video');
-                const posterUrl = isVideo ? item.url.replace(/\.[^.]+$/, '.jpg') : null;
-                return `<div class="upload-preview-item" id="gallery-item-${i}">
-                  ${isVideo
-                    ? `<div style="position:relative;width:100%;height:100%;">
-                        <img src="${posterUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                        <div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:1.5rem;">🎥</div>
-                       </div>`
-                    : `<img src="${item.thumbnails?.small?.url || item.url}" style="width:100%;height:100%;object-fit:cover;">`
-                  }
-                  <button class="remove-btn" onclick="removeGalleryItem(${i}, '${item.url}')">✕</button>
-                </div>`;
-              }).join('')}
-            </div>
-            <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;">Clica no ✕ para remover uma foto/vídeo.</p>
-          ` : '<input type="hidden" id="ef-galeria-existing" value="">'}
-          <div class="upload-area" onclick="document.getElementById('ef-galeria').click()">
-            📁 Clica para adicionar fotos ou vídeos
-          </div>
-          <input type="file" id="ef-galeria" accept="image/*,video/*" multiple style="display:none;" onchange="previewGallery(this)">
-          <div class="upload-preview" id="gallery-preview"></div>
-        </div>
-
-        <div style="border-top:1px solid var(--border);margin:1.5rem 0;padding-top:1.5rem;">
-          <p style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.9rem;margin-bottom:0.4rem;">🏅 Badge para redes sociais</p>
-          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem;">Descarrega a tua imagem de treinador FitList e partilha no Instagram ou WhatsApp.</p>
-          <button type="button" onclick="gerarBadge('${f['Nome']}', '${getEspecPrimaria(f)}', '${f['Foto Perfil'] || f['Foto']?.[0]?.url || ''}')" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--mid2);border:1px solid var(--border);color:var(--white);border-radius:10px;padding:0.65rem 1.25rem;font-size:0.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;">
-            📲 Descarregar badge
-          </button>
-          <canvas id="badge-canvas" style="display:none;"></canvas>
-        </div>
-
-        <button class="save-btn" onclick="saveEditProfile('${record.id}')">💾 Guardar alterações</button>
       </div>`;
 
-  } catch(e) {
+  } catch(err) {
     sub.textContent = '';
-    container.innerHTML = `<div class="token-error"><h3>Erro ao carregar</h3><p>Tenta novamente mais tarde.</p></div>`;
+    container.innerHTML = `<div class="token-error"><h3>Erro ao carregar</h3><p>Não foi possível carregar o teu perfil. Verifica a tua ligação à internet e tenta novamente.</p></div>`;
   }
 }
 
-// Guarda as alterações do PT no Airtable
-async function saveEditProfile(recordId) {
-  const btn = document.querySelector('.save-btn');
+// ── GUARDAR ALTERAÇÕES DO PERFIL ──
+async function saveEditProfile(recordId, token) {
+  const btn = document.getElementById('ef-save');
   btn.disabled = true;
   btn.textContent = 'A guardar...';
 
-  // Campo é Single line text no Airtable — envia sempre string ou null
-  function parsePreco(val) {
-    if (!val || val.trim() === '') return null;
-    return val.trim();
-  }
+  const especialidadeSel = Array.from(document.querySelectorAll('input[name="ef-espec"]:checked')).map(cb => cb.value);
 
-  const preco = parsePreco(document.getElementById('ef-preco').value);
-
-  // Upload foto de perfil para Cloudinary
-  const fotoInput = document.getElementById('ef-foto');
-  let fotoPerfil = null;
-  if (fotoInput && fotoInput.files.length > 0) {
-    btn.textContent = 'A carregar foto de perfil... 0%';
-    try {
-      const compressed = await compressImage(fotoInput.files[0]);
-      fotoPerfil = await uploadToCloudinary(compressed, pct => {
-        btn.textContent = `A carregar foto de perfil... ${pct}%`;
-      });
-    } catch(e) {
-      showToast('Erro ao carregar foto de perfil. Tenta novamente.');
-      btn.disabled = false;
-      btn.textContent = '💾 Guardar alterações';
-      return;
-    }
-  }
-
-  // Upload de galeria para Cloudinary
-  const galeriaInput = document.getElementById('ef-galeria');
-  const galeriaFiles = galeriaInput ? Array.from(galeriaInput.files).slice(0, 9) : [];
-  let galeriaUrls = [];
-  if (galeriaFiles.length > 0) {
-    try {
-      let uploaded = 0;
-      galeriaUrls = await Promise.all(galeriaFiles.map(async (f, i) => {
-        const compressed = await compressImage(f);
-        const url = await uploadToCloudinary(compressed, pct => {
-          btn.textContent = `A carregar ficheiro ${i+1}/${galeriaFiles.length}... ${pct}%`;
-        });
-        uploaded++;
-        btn.textContent = `${uploaded}/${galeriaFiles.length} ficheiros carregados ✓`;
-        return url;
-      }));
-    } catch(e) {
-      showToast('Erro ao carregar ficheiros. Tenta novamente.');
-      btn.disabled = false;
-      btn.textContent = '💾 Guardar alterações';
-      return;
-    }
-  }
-
-  const fields = {
-    'Nome': document.getElementById('ef-nome').value,
-    'Email': document.getElementById('ef-email').value,
-    'WhatsApp': document.getElementById('ef-whatsapp').value.trim() || null,
-    'Especialidade': Array.from(document.querySelectorAll('input[name="ef-espec"]:checked')).map(cb => cb.value),
-    'Género': document.getElementById('ef-genero').value || null,
-    'Zona': document.getElementById('ef-zona').value,
-    'Preço por Sessão': preco,
-    'Preço Pack 1x/Semana': parsePreco(document.getElementById('ef-pack1').value),
-    'Preço Pack 2x/Semana': parsePreco(document.getElementById('ef-pack2').value),
-    'Preço Pack 3x/Semana': parsePreco(document.getElementById('ef-pack3').value),
-    'Preço Pack 4x/Semana': parsePreco(document.getElementById('ef-pack4').value),
-    'Preço Pack 5x/Semana': parsePreco(document.getElementById('ef-pack5').value),
-    'Preço Pack 6x/Semana': parsePreco(document.getElementById('ef-pack6').value),
-    'Preço Pack 7x/Semana': parsePreco(document.getElementById('ef-pack7').value),
-    'Preço Consulta Online': parsePreco(document.getElementById('ef-consulta').value),
-    'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
-    'Bio': document.getElementById('ef-bio').value,
+  const parsePreco = v => {
+    const t = (v || '').trim();
+    return t === '' ? null : t;
   };
 
-  if (fotoPerfil) {
-    fields['Foto Perfil'] = fotoPerfil;
-  } else if (document.getElementById('ef-foto-removed')?.value === 'true') {
-    fields['Foto Perfil'] = 'REMOVED';
-  }
+  const fields = {
+    'Nome': document.getElementById('ef-nome').value.trim(),
+    'Especialidade': especialidadeSel,
+    'Zona': document.getElementById('ef-zona').value,
+    'Anos Experiência': Number(document.getElementById('ef-exp').value) || null,
+    'Bio': document.getElementById('ef-bio').value.trim(),
+    'Preço por Sessão': parsePreco(document.getElementById('ef-preco').value),
+    'Preço Pack 2x/Semana': parsePreco(document.getElementById('ef-pack2').value),
+    'Preço Pack 3x/Semana': parsePreco(document.getElementById('ef-pack3').value),
+    'Preço Consulta Online': parsePreco(document.getElementById('ef-consulta').value),
+    'WhatsApp': document.getElementById('ef-whatsapp').value.trim(),
+    'Foto Perfil': document.getElementById('ef-foto-perfil-url').value || null,
+    'Galeria Cloudinary': document.getElementById('ef-galeria-existing').value || null,
+  };
 
-  // Adiciona URLs da galeria se houver novos uploads
-  if (galeriaUrls.length > 0) {
-    const existingUrls = document.getElementById('ef-galeria-existing')?.value || '';
-    const allUrls = [existingUrls, ...galeriaUrls].filter(Boolean).join(',');
-    fields['Galeria Cloudinary'] = allUrls;
-  }
-
-  // Remove campos nulos — excepto Foto Perfil que pode ser REMOVED e Especialidade que é array
   Object.keys(fields).forEach(k => {
-    if (k === 'Foto Perfil') return;
-    if (k === 'Especialidade') return; // nunca remover — Airtable precisa do array
     if (fields[k] === null || fields[k] === '') delete fields[k];
   });
-
-  // Garantir que Especialidade é sempre array não vazio
-  if (!fields['Especialidade'] || fields['Especialidade'].length === 0) {
-    showToast('Selecciona pelo menos uma especialidade.');
-    btn.disabled = false;
-    btn.textContent = '💾 Guardar alterações';
-    return;
-  }
+  if (document.getElementById('ef-foto-perfil-url').value === 'REMOVED') fields['Foto Perfil'] = 'REMOVED';
 
   try {
-    btn.textContent = 'A guardar...';
-    const res = await fetch(`/airtable?action=update&id=${recordId}`, {
+    const res = await fetch(`/airtable?action=update&token=${encodeURIComponent(token)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields })
+      body: JSON.stringify({ id: recordId, fields })
     });
     const data = await res.json();
-    if (data.error) {
-      const msg = data.error.message || data.error.type || JSON.stringify(data.error);
-      console.error('Airtable error:', data.error);
-      throw new Error(msg);
-    }
-    btn.textContent = '✅ Guardado com sucesso!';
-    btn.style.background = 'var(--green)';
-    showToast('Perfil actualizado! As alterações aparecem no site em segundos.');
-  } catch(e) {
-    btn.disabled = false;
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    showToast('✅ Perfil actualizado com sucesso!');
     btn.textContent = '💾 Guardar alterações';
-    console.error('Save error:', e.message);
-    showToast('Erro: ' + e.message);
+    btn.disabled = false;
+  } catch(e) {
+    showToast('Erro ao guardar: ' + (e.message || 'Tenta novamente'));
+    btn.textContent = '💾 Guardar alterações';
+    btn.disabled = false;
+    console.error('Erro ao guardar:', e);
   }
 }
 
 // ── INICIALIZAÇÃO ──
+// Corre quando a página carrega
+loadPreferences();
+loadFeatured();
+
 const urlParams = new URLSearchParams(window.location.search);
 const editToken = urlParams.get('editar');
 const perfilId  = urlParams.get('perfil');
 const pageParam = urlParams.get('page');
 
 if (editToken) {
-  showPage('edit');
   loadEditPage(editToken);
 } else if (perfilId) {
-  loadTrainers().then(() => {
-    const index = allTrainers.findIndex(r => r.id === perfilId);
-    if (index >= 0) {
-      openProfile(index);
-    } else {
-      showPage('listings');
-    }
-  });
-  loadFeatured();
+  // Link directo para um perfil — carrega os dados e abre
+  (async () => {
+    try {
+      const res = await fetch('/airtable?action=list');
+      const data = await res.json();
+      allTrainers = data.records || [];
+      const index = allTrainers.findIndex(r => r.id === perfilId);
+      if (index >= 0) openProfile(index);
+      else showPage('home');
+    } catch(e) { showPage('home'); }
+  })();
 } else if (pageParam === 'register') {
-  loadTrainers();
-  loadFeatured();
-  loadHomeEventos();
   showPage('register');
 } else if (pageParam === 'encontrar') {
-  loadTrainers();
-  loadFeatured();
-  loadHomeEventos();
   showPage('encontrar');
-} else {
-  loadTrainers();
-  loadFeatured();
-  loadHomeEventos();
-  loadPreferences();
 }
 
-// Cat pills interactivos
+// Cat pills da hero — activa visual
 document.querySelectorAll('.cat-pill').forEach(pill => {
-  pill.addEventListener('click', function() {
+  pill.addEventListener('click', () => {
     document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-    this.classList.add('active');
+    pill.classList.add('active');
   });
 });
 
 // Inicializa ícones Lucide
 if (typeof lucide !== 'undefined') lucide.createIcons();
+
+// ── SCROLL REVEALS ──
+// As secções da home surgem suavemente ao fazer scroll.
+// Só activa se o browser suportar IntersectionObserver — senão fica tudo visível.
+if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const sections = document.querySelectorAll('#home-page section:not(.hero)');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  sections.forEach(s => { s.classList.add('reveal'); io.observe(s); });
+}
+
+// ── PWA — SERVICE WORKER ──
+// Permite instalar o FitList no ecrã inicial do telemóvel
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>
